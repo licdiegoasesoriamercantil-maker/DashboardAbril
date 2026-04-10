@@ -619,7 +619,7 @@ function renderPagos() {
   
   document.getElementById('pagosMetrics').innerHTML = `
     <div class="mc"><div class="lbl">Total pagos</div><div class="val">${totalPagos}</div><div class="sub">operaciones realizadas</div></div>
-    <div class="mc hi"><div class="lbl">Total recaudado</div><div class="val">$${(totalRecaudado/1000).toFixed(0)}K</div><div class="sub">${totalRecaudado.toLocaleString()} MXN</div></div>
+    <div class="mc hi"><div class="lbl">Total recaudado</div><div class="val">$${(totalRecaudado/1000).toFixed(0)}K</div><div class="sub">${totalRecaudado.toLocaleString()} USD</div></div>
     <div class="mc"><div class="lbl">Promedio por pago</div><div class="val">$${Math.round(totalRecaudado/totalPagos).toLocaleString()}</div><div class="sub">monto promedio</div></div>
     <div class="mc"><div class="lbl">Asesores activos</div><div class="val">${PAGOS_DATA.length}</div><div class="sub">con registro de pagos</div></div>
   `;
