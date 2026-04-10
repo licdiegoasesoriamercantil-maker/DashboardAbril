@@ -631,7 +631,7 @@ function renderPagos() {
   if (chartPagos) chartPagos.destroy();
   chartPagos = new Chart(document.getElementById('chartPagos'), {
     type: 'bar',
-    data: { labels: nombres, datasets: [{ label: 'Monto recaudado (MXN)', data: montos, backgroundColor: 'rgba(61,184,122,0.7)', borderRadius: 6 }] },
+    data: { labels: nombres, datasets: [{ label: 'Monto recaudado (USD)', data: montos, backgroundColor: 'rgba(61,184,122,0.7)', borderRadius: 6 }] },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: 'rgba(255,255,255,0.6)' } } }, scales: { x: { ticks: { color: 'rgba(255,255,255,0.6)' }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { ticks: { color: 'rgba(255,255,255,0.6)' }, grid: { color: 'rgba(255,255,255,0.05)' } } } }
   });
   
