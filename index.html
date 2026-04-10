@@ -680,7 +680,7 @@ function buildResumenConDatos(asesoresData){
     <div class="mc"><div class="lbl">Gestiones totales</div><div class="val">${totalG.toLocaleString()}</div><div class="sub">Período completo</div></div>
     <div class="mc"><div class="lbl">Contactos</div><div class="val">${totalC}</div><div class="sub">Efectividad: <span class="ok">${efectGlobal}%</span></div></div>
     <div class="mc"><div class="lbl">Promesas</div><div class="val">${totalP}</div><div class="sub">Conv. contacto: <span class="ok">${convGlobal}%</span></div></div>
-    <div class="mc"><div class="lbl">Clientes gestionados</div><div class="val">${totalClGest.toLocaleString()}</div><div class="sub">Base trabajada</div></div>
+    <div class="mc"><div class="lbl">Cuentas gestionadas</div><div class="val">${totalClGest.toLocaleString()}</div><div class="sub">Base trabajada</div></div>
     <div class="mc"><div class="lbl">Clientes contactados</div><div class="val">${totalClCont}</div><div class="sub">Alcance: ${totalClGest>0?((totalClCont/totalClGest)*100).toFixed(1):0}%</div></div>
     <div class="mc hi"><div class="lbl">Clientes c/promesa</div><div class="val">${totalClProm}</div><div class="sub">${totalClCont>0?Math.round(totalClProm/totalClCont*100):0}% de contactados</div></div>
   `;
