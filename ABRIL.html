@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Abril</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+/* =================================================
+   VARIABLES — edita aquí para personalizar
+================================================= */
+:root {
+  --navy:         #08111F;
+  --navy-mid:     #0E1E35;
+  --navy-card:    #111F38;
+  --navy-hover:   #162742;
+  --navy-subtle:  #0B1626;
+  --gold:         #C9A84C;
+  --gold-light:   #E2C97E;
+  --gold-pale:    #F5E9C8;
+  --gold-dim:     rgba(201,168,76,0.13);
+  --gold-glow:    rgba(201,168,76,0.06);
+  --white:        #FFFFFF;
+  --text-primary: rgba(255,255,255,0.92);
+  --text-sub:     rgba(255,255,255,0.60);
+  --text-muted:   rgba(255,255,255,0.35);
+  --border:       rgba(201,168,76,0.18);
+  --border-soft:  rgba(255,255,255,0.06);
+  --success:      #3DB87A;
+  --warning:      #D4A844;
+  --danger:       #D45C4C;
+  --info:         #4A8FD4;
+  --radius:       6px;
+  --radius-lg:    10px;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body:    'DM Sans', sans-serif;
+}
+
+/* =================================================
+   RESET
+================================================= */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:18px;scroll-behavior:smooth;}
+body{
+  font-family:var(--font-body);
+  background:var(--navy);
+  color:var(--text-primary);
+  min-height:100vh;
+  font-weight:300;
+  line-height:1.6;
+}
+
+/* =================================================
+   HEADER
+================================================= */
+.header{
+  background:var(--navy-mid);
+  border-bottom:1px solid var(--border);
+  padding:0 2.25rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  height:76px;
+  position:sticky;top:0;z-index:200;
+}
+.h-brand{display:flex;align-items:center;gap:16px;}
+.h-gem{
+  width:40px;height:40px;
+  border:2px solid var(--gold);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
+}
+.h-gem::after{
+  content:'';width:14px;height:14px;
+  background:var(--gold);border-radius:50%;
+}
+.h-title{
+  font-family:var(--font-display);
+  font-size:1.65rem;font-weight:500;
+  color:var(--white);letter-spacing:.02em;
+}
+.h-sub{
+  font-size:.72rem;color:var(--gold);
+  letter-spacing:.14em;text-transform:uppercase;
+  margin-top:2px;
+}
+.h-right{text-align:right;}
+.h-date{font-size:.85rem;color:var(--text-sub);letter-spacing:.04em;}
+.h-date strong{display:block;color:var(--text-primary);font-weight:400;font-size:.95rem;}
+
+/* =================================================
+   NAV
+================================================= */
+.nav{
+  background:var(--navy-mid);
+  border-bottom:1px solid var(--border);
+  display:flex;padding:0 2.25rem;gap:0;
+}
+.nav-btn{
+  padding:1rem 1.75rem;
+  font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--text-muted);cursor:pointer;
+  border:none;background:none;
+  border-bottom:3px solid transparent;
+  transition:all .18s;font-family:var(--font-body);
+}
+.nav-btn:hover{color:var(--text-sub);}
+.nav-btn.active{color:var(--gold);border-bottom-color:var(--gold);}
+
+/* =================================================
+   LAYOUT
+================================================= */
+.view{display:none;padding:2rem 2.25rem;}
+.view.active{display:block;}
+.view-title{
+  font-family:var(--font-display);
+  font-size:2rem;font-weight:500;
+  letter-spacing:.01em;margin-bottom:4px;
+}
+.view-sub{
+  font-size:.78rem;color:var(--gold);
+  letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:.1rem;
+}
+.gold-bar{width:40px;height:2px;background:var(--gold);margin:.6rem 0 1.5rem;}
+.mb{margin-bottom:14px;}
+.mt{margin-top:14px;}
+
+/* =================================================
+   METRIC CARDS
+================================================= */
+.metrics-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+  gap:12px;margin-bottom:1.4rem;
+}
+.mc{
+  background:var(--navy-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:1.2rem 1.35rem;
+  position:relative;overflow:hidden;
+}
+.mc::before{
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  opacity:.7;
+}
+.mc .lbl{
+  font-size:.72rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--gold);
+  margin-bottom:8px;
+}
+.mc .val{
+  font-family:var(--font-display);
+  font-size:2.6rem;font-weight:500;
+  color:var(--white);line-height:1;
+}
+.mc .sub{font-size:.78rem;color:var(--text-muted);margin-top:6px;}
+.mc.hi .val{color:var(--success);}
+.mc.wa .val{color:var(--warning);}
+
+/* =================================================
+   CARDS GENÉRICAS
+================================================= */
+.card{
+  background:var(--navy-card);
+  border:1px solid var(--border-soft);
+  border-radius:var(--radius-lg);
+  padding:1.4rem 1.6rem;
+}
+.card-title{
+  font-size:.75rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--gold);
+  margin-bottom:1.1rem;
+}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;}
+@media(max-width:680px){.grid2,.grid3{grid-template-columns:1fr;}}
+
+/* =================================================
+   TABLE GENERAL
+================================================= */
+.table-wrap{overflow-x:auto;}
+table.gt{
+  width:100%;border-collapse:collapse;
+  font-size:.92rem;
+}
+table.gt th{
+  text-align:left;
+  font-size:.7rem;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--gold);
+  padding:0 14px 12px 0;
+  border-bottom:1px solid var(--border);
+  font-weight:400;white-space:nowrap;
+}
+table.gt td{
+  padding:11px 14px 11px 0;
+  border-bottom:1px solid var(--border-soft);
+  color:var(--text-sub);vertical-align:middle;
+  white-space:nowrap;
+}
+table.gt tr:last-child td{border-bottom:none;}
+table.gt tr:hover td{background:rgba(255,255,255,.015);}
+table.gt td.bold{color:var(--text-primary);font-weight:400;}
+table.gt td.num{text-align:right;font-variant-numeric:tabular-nums;}
+table.gt th.num{text-align:right;}
+.ok{color:var(--success);}
+.wn{color:var(--warning);}
+.er{color:var(--danger);}
+
+/* =================================================
+   CAMP TAG
+================================================= */
+.camp-tag{
+  display:inline-block;font-size:.75rem;
+  padding:3px 10px;border-radius:3px;
+  border:1px solid;letter-spacing:.04em;
+  font-weight:400;white-space:nowrap;
+}
+.site-tag{
+  display:inline-block;font-size:.75rem;
+  padding:3px 9px;border-radius:3px;
+  border:1px solid var(--border);
+  color:var(--gold-light);letter-spacing:.04em;
+}
+
+/* =================================================
+   MINI BAR
+================================================= */
+.mini-bw{
+  display:inline-block;width:80px;height:5px;
+  background:var(--navy-subtle);border-radius:2px;
+  overflow:hidden;vertical-align:middle;margin-left:6px;
+}
+.mini-bf{height:100%;border-radius:2px;}
+
+/* =================================================
+   AGENT CARDS (expandibles)
+================================================= */
+.agent-card{
+  background:var(--navy-card);
+  border:1px solid var(--border-soft);
+  border-radius:var(--radius-lg);
+  margin-bottom:10px;overflow:hidden;
+  transition:border-color .18s;
+}
+.agent-card:hover{border-color:var(--border);}
+.agent-header{
+  display:flex;align-items:center;gap:14px;
+  padding:15px 18px;cursor:pointer;user-select:none;
+}
+.agent-header:hover{background:rgba(255,255,255,.02);}
+.avatar{
+  width:44px;height:44px;border-radius:50%;
+  background:var(--gold-dim);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.82rem;font-weight:500;color:var(--gold);
+  flex-shrink:0;letter-spacing:.02em;
+}
+.ag-meta{flex:1;min-width:0;}
+.ag-name{font-size:1rem;font-weight:400;color:var(--white);}
+.ag-sub{font-size:.78rem;color:var(--text-muted);margin-top:2px;}
+.ag-right{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.caret{font-size:.8rem;color:var(--text-muted);transition:transform .2s;}
+.caret.open{transform:rotate(180deg);}
+
+/* RESUMEN INLINE en header */
+.ag-kpi{
+  display:flex;gap:18px;
+  font-size:.78rem;color:var(--text-muted);
+  flex-wrap:wrap;
+}
+.ag-kpi span{color:var(--text-sub);font-weight:400;}
+.ag-kpi .hi{color:var(--success);}
+.ag-kpi .wa{color:var(--warning);}
+
+/* BODY expandido */
+.agent-body{border-top:1px solid var(--border-soft);padding:0 18px 18px;}
+.ab-label{
+  font-size:.7rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--gold);
+  padding:14px 0 9px;
+}
+
+/* grids internos */
+.kpi-row{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+  gap:9px;margin-bottom:12px;
+}
+.kpi-block{
+  background:var(--navy-subtle);
+  border-radius:var(--radius);padding:10px 13px;
+}
+.kb-lbl{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px;}
+.kb-val{font-family:var(--font-display);font-size:1.4rem;font-weight:500;color:var(--white);}
+
+/* camp cards dentro del agente */
+.camps-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:9px;margin-bottom:12px;
+}
+.cc{
+  background:var(--navy-subtle);
+  border-radius:var(--radius);padding:12px 14px;
+  border-left:2px solid;
+}
+.cc-name{font-size:.82rem;font-weight:500;margin-bottom:7px;}
+.cc-stats{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;}
+.cs{font-size:.75rem;color:var(--text-muted);}
+.cs span{color:var(--text-sub);}
+
+/* barra distribución tiempo por campaña */
+.dist-bar{display:flex;gap:2px;height:6px;border-radius:3px;overflow:hidden;margin:10px 0 7px;}
+.db-seg{height:100%;}
+.dist-legend{display:flex;flex-wrap:wrap;gap:12px;}
+.dl-item{display:flex;align-items:center;gap:5px;font-size:.75rem;color:var(--text-muted);}
+.dl-sq{width:9px;height:9px;border-radius:2px;}
+
+/* HORARIO section */
+.horario-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+  gap:7px;margin-bottom:10px;
+}
+.hb{
+  background:var(--navy-subtle);
+  border-radius:var(--radius);padding:8px 10px;
+  border-top:2px solid var(--border);
+}
+.hb.ok-b{border-top-color:var(--success);}
+.hb.wa-b{border-top-color:var(--warning);}
+.hb.er-b{border-top-color:var(--danger);}
+.hb-lbl{font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:2px;}
+.hb-val{font-size:.88rem;font-weight:400;color:var(--text-primary);}
+.hb-note{font-size:.6rem;color:var(--text-muted);margin-top:2px;}
+
+/* barra cumplimiento */
+.cumpl-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.cumpl-lbl{font-size:.65rem;color:var(--text-muted);min-width:100px;}
+.cumpl-bw{flex:1;height:5px;background:var(--navy-subtle);border-radius:2px;overflow:hidden;}
+.cumpl-bf{height:100%;border-radius:2px;}
+.cumpl-v{font-size:.68rem;color:var(--text-sub);min-width:32px;text-align:right;}
+
+/* =================================================
+   RANKING BARS
+================================================= */
+.rank-row{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:10px;
+}
+.rank-name{font-size:.85rem;color:var(--text-sub);width:150px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rank-bw{flex:1;height:8px;background:var(--navy-subtle);border-radius:4px;overflow:hidden;}
+.rank-bf{height:100%;border-radius:4px;}
+.rank-v{font-size:.82rem;color:var(--text-sub);min-width:36px;text-align:right;}
+
+/* =================================================
+   LEGEND
+================================================= */
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:10px;}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:.82rem;color:var(--text-sub);}
+.leg-sq{width:10px;height:10px;border-radius:2px;}
+
+/* =================================================
+   FILTROS ASESORES — Estilo premium
+================================================= */
+.filtros-asesores{
+  background: var(--navy-mid);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.8rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.filtro-group{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--navy-subtle);
+  padding: 0.5rem 1.2rem;
+  border-radius: 48px;
+  border: 1px solid var(--border-soft);
+  transition: all 0.2s;
+}
+.filtro-group:hover{
+  border-color: var(--gold-dim);
+  background: var(--navy-card);
+}
+.filtro-group label{
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 500;
+}
+.filtro-group select{
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-family: var(--font-body);
+  padding: 6px 8px;
+  cursor: pointer;
+  outline: none;
+  font-weight: 400;
+}
+.filtro-group select option{
+  background: var(--navy-card);
+  color: var(--text-primary);
+}
+.filtro-icon{
+  font-size: 1rem;
+  color: var(--gold);
+  opacity: 0.8;
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="h-brand">
+    <div class="h-gem"></div>
+    <div>
+      <div class="h-title">Gestión de Cobranza</div>
+    </div>
+  </div>
+  <div class="h-right">
+    <div class="h-date">
+      <strong id="fechaHoy"></strong>
+    </div>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="nav-btn active" onclick="showView('resumen',this)">Resumen general</button>
+  <button class="nav-btn" onclick="showView('asesores',this)">Asesores</button>
+  <button class="nav-btn" onclick="showView('horarios',this)">Horarios</button>
+</nav>
+
+<!-- ================================================
+     VIEW: RESUMEN GENERAL (Sin filtro de fecha)
+================================================ -->
+<div class="view active" id="view-resumen">
+
+  <div class="view-title">Resumen operativo</div>
+  <div class="view-sub">Cobranza — todos los sites · período completo</div>
+  <div class="gold-bar"></div>
+
+  <!-- KPIs globales -->
+  <div class="metrics-grid" id="globalMetrics"></div>
+
+  <!-- GRÁFICAS -->
+  <div class="grid2">
+    <div class="card mb">
+      <div class="card-title">Gestiones por asesor</div>
+      <div class="legend" id="legGest"></div>
+      <div style="position:relative;width:100%;height:270px;">
+        <canvas id="chartGest" role="img">Gestiones por asesor.</canvas>
+      </div>
+    </div>
+    <div class="card mb">
+      <div class="card-title">Contactos vs promesas por asesor</div>
+      <div class="legend">
+        <div class="leg-item"><div class="leg-sq" style="background:#4A8FD4;"></div>Contactos</div>
+        <div class="leg-item"><div class="leg-sq" style="background:#C9A84C;"></div>Promesas</div>
+      </div>
+      <div style="position:relative;width:100%;height:270px;">
+        <canvas id="chartCP" role="img">Contactos y promesas por asesor.</canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid3">
+    <div class="card mb">
+      <div class="card-title">Gestiones por campaña</div>
+      <div style="position:relative;width:100%;height:220px;">
+        <canvas id="chartCamp" role="img">Gestiones por campaña.</canvas>
+      </div>
+    </div>
+    <div class="card mb">
+      <div class="card-title">Ranking — clientes contactados</div>
+      <div id="rankContactados"></div>
+    </div>
+    <div class="card mb">
+      <div class="card-title">Ranking — clientes c/promesa</div>
+      <div id="rankPromesas"></div>
+    </div>
+  </div>
+
+  <!-- Tabla resumen por asesor -->
+  <div class="card">
+    <div class="card-title">Detalle por asesor — totales</div>
+    <div class="table-wrap">
+      <table class="gt" id="tablaResumen">
+        <thead>
+          <tr><th>Asesor</th><th>Site</th><th class="num">Gestiones</th><th class="num">Contactos</th><th class="num">Promesas</th><th class="num">Cl. gestionados</th><th class="num">Cl. contactados</th><th class="num">Cl. c/promesa</th><th class="num">Efect. contacto</th><th class="num">Conv. promesa</th></tr>
+        </thead>
+        <tbody id="tablaResumenBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================
+     VIEW: ASESORES (con filtros de Site y Campaña + estilo premium)
+================================================ -->
+<div class="view" id="view-asesores">
+
+  <div class="view-title">Asesores</div>
+  <div class="view-sub">Detalle por asesor y campaña</div>
+  <div class="gold-bar"></div>
+
+  <!-- Filtros con estilo mejorado -->
+  <div class="filtros-asesores">
+    <div class="filtro-group">
+      <span class="filtro-icon">📍</span>
+      <label>SITE</label>
+      <select id="fSite" onchange="renderAsesores()">
+        <option value="all">Todos los sites</option>
+        <option value="EXTERNO">Externo</option>
+        <option value="MÉXICO">México</option>
+      </select>
+    </div>
+    <div class="filtro-group">
+      <span class="filtro-icon">📢</span>
+      <label>CAMPAÑA</label>
+      <select id="fCamp" onchange="renderAsesores()">
+        <option value="all">Todas las campañas</option>
+        <option value="Directv">Directv</option>
+        <option value="Movistar">Movistar</option>
+        <option value="PagueYa">PagueYa</option>
+        <option value="CPN">CPN</option>
+        <option value="Diners">Diners</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="metrics-grid" id="metricsA"></div>
+  <div id="agentList"></div>
+</div>
+
+<!-- ================================================
+     VIEW: HORARIOS
+================================================ -->
+<div class="view" id="view-horarios">
+  <div class="view-title">Control de horarios</div>
+  <div class="view-sub">Break · Baño · Entrada · Salida · % Cumplimiento</div>
+  <div class="gold-bar"></div>
+  <div class="card">
+    <div class="card-title">Registro de horarios</div>
+    <div class="table-wrap">
+      <table class="gt">
+        <thead><tr><th>Asesor</th><th class="num">Entrada</th><th class="num">Salida</th><th class="num">Break (min)</th><th class="num">Baño (min)</th><th class="num">% Cumplimiento</th><th>Estado</th></tr></thead>
+        <tbody id="tablaHorarios"><tr><td colspan="7" style="color:var(--text-muted);">Sin datos de horarios cargados.</td></tr></tbody>
+       </table>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =============================================
+   DATOS BASE — asesores (completos, sin filtro de fecha)
+============================================= */
+const ASESORES_BASE = [
+  {code:'C.YDELACRUZ', site:'EXTERNO', nombre:'Yudixa De La Cruz García', total:{gestiones:488,contactos:60,promesas:32,clGest:336,clCont:59,clProm:32}, camps:[{name:'Directv',gestiones:0,contactos:0,promesas:0,clGest:0,clCont:0,clProm:0},{name:'Movistar',gestiones:279,contactos:41,promesas:15,clGest:246,clCont:40,clProm:15},{name:'PagueYa',gestiones:0,contactos:0,promesas:0,clGest:0,clCont:0,clProm:0},{name:'CPN',gestiones:209,contactos:19,promesas:17,clGest:90,clCont:19,clProm:17}]},
+  {code:'C-BIBERO', site:'EXTERNO', nombre:'Betzabeth Romina Ibero Gómez', total:{gestiones:437,contactos:106,promesas:52,clGest:337,clCont:101,clProm:52}, camps:[{name:'Directv',gestiones:0,contactos:0,promesas:0,clGest:0,clCont:0,clProm:0},{name:'Movistar',gestiones:285,contactos:97,promesas:43,clGest:263,clCont:92,clProm:43},{name:'PagueYa',gestiones:0,contactos:0,promesas:0,clGest:0,clCont:0,clProm:0},{name:'CPN',gestiones:152,contactos:9,promesas:9,clGest:74,clCont:9,clProm:4}]},
+  {code:'C-CSALAZAR', site:'EXTERNO', nombre:'Claritza Carolina Salazar Quijada', total:{gestiones:541,contactos:115,promesas:39,clGest:394,clCont:115,clProm:38}, camps:[{name:'Directv',gestiones:0,contactos:0,promesas:0,clGest:0,clCont:0,clProm:0},{name:'Movistar',gestiones:365,contactos:103,promesas:27,clGest:323,clCont:103,clProm:26},{name:'PagueYa',gestiones:0,contactos:0,promesas:0,clGest:0,clCont:0,clProm:0},{name:'CPN',gestiones:176,contactos:12,promesas:12,clGest:71,clCont:12,clProm:12}]},
+  {code:'C-MGONZALEZ', site:'MÉXICO', nombre:'Martín González Santos', total:{gestiones:1068,contactos:79,promesas:20,clGest:930,clCont:79,clProm:20}, camps:[{name:'Directv',gestiones:1068,contactos:79,promesas:20,clGest:930,clCont:79,clProm:20},{name:'Movistar',gestiones:0,contactos:0,promesas:0,clGest:0,clCont:0,clProm:0},{name:'PagueYa',gestiones:0,contactos:0,promesas:0,clGest:0,clCont:0,clProm:0},{name:'CPN',gestiones:0,contactos:0,promesas:0,clGest:0,clCont:0,clProm:0}]},
+  {code:'C-MHERNANDEZ', site:'MÉXICO', nombre:'Magaly Hernández', total:{gestiones:660,contactos:120,promesas:8,clGest:599,clCont:117,clProm:7}, camps:[{name:'Directv',gestiones:0,contactos:0,promesas:0,clGest:0,clCont:0,clProm:0},{name:'Movistar',gestiones:655,contactos:120,promesas:8,clGest:599,clCont:117,clProm:7},{name:'PagueYa',gestiones:5,contactos:0,promesas:0,clGest:0,clCont:0,clProm:0},{name:'CPN',gestiones:0,contactos:0,promesas:0,clGest:0,clCont:0,clProm:0}]},
+  {code:'C-NCASTREJON', site:'MÉXICO', nombre:'Nataly Castrejón', total:{gestiones:648,contactos:107,promesas:27,clGest:519,clCont:101,clProm:26}, camps:[{name:'Directv',gestiones:0,contactos:0,promesas:0,clGest:0,clCont:0,clProm:0},{name:'Movistar',gestiones:615,contactos:105,promesas:27,clGest:497,clCont:99,clProm:26},{name:'PagueYa',gestiones:33,contactos:2,promesas:0,clGest:22,clCont:2,clProm:0},{name:'CPN',gestiones:0,contactos:0,promesas:0,clGest:0,clCont:0,clProm:0}]},
+  {code:'C-NRESENDIZ', site:'MÉXICO', nombre:'Nadiram Reséndiz Peralta', total:{gestiones:881,contactos:42,promesas:7,clGest:731,clCont:40,clProm:6}, camps:[{name:'Directv',gestiones:869,contactos:42,promesas:7,clGest:731,clCont:40,clProm:6},{name:'Movistar',gestiones:0,contactos:0,promesas:0,clGest:0,clCont:0,clProm:0},{name:'PagueYa',gestiones:12,contactos:0,promesas:0,clGest:0,clCont:0,clProm:0},{name:'CPN',gestiones:0,contactos:0,promesas:0,clGest:0,clCont:0,clProm:0}]},
+  {code:'C-SMILAGROS', site:'EXTERNO', nombre:'Segura Lenis Milagros Del Valle', total:{gestiones:628,contactos:128,promesas:43,clGest:456,clCont:124,clProm:43}, camps:[{name:'Directv',gestiones:0,contactos:0,promesas:0,clGest:0,clCont:0,clProm:0},{name:'Movistar',gestiones:330,contactos:111,promesas:27,clGest:309,clCont:107,clProm:27},{name:'PagueYa',gestiones:0,contactos:0,promesas:0,clGest:0,clCont:0,clProm:0},{name:'CPN',gestiones:298,contactos:17,promesas:16,clGest:147,clCont:17,clProm:16}]},
+  {code:'C-SVELAZQUEZ', site:'MÉXICO', nombre:'Sandra Paola Velázquez Reyes', total:{gestiones:1576,contactos:176,promesas:40,clGest:1215,clCont:161,clProm:40}, camps:[{name:'Directv',gestiones:0,contactos:0,promesas:0,clGest:0,clCont:0,clProm:0},{name:'Movistar',gestiones:516,contactos:110,promesas:0,clGest:441,clCont:106,clProm:15},{name:'PagueYa',gestiones:798,contactos:39,promesas:12,clGest:593,clCont:34,clProm:12},{name:'CPN',gestiones:262,contactos:27,promesas:13,clGest:181,clCont:21,clProm:13}]},
+  {code:'C-JROMERO', site:'MÉXICO', nombre:'Juan Manuel Romero', total:{gestiones:623,contactos:5,promesas:3,clGest:349,clCont:5,clProm:3}, camps:[{name:'Directv',gestiones:0,contactos:0,promesas:0,clGest:0,clCont:0,clProm:0},{name:'Movistar',gestiones:0,contactos:0,promesas:0,clGest:0,clCont:0,clProm:0},{name:'PagueYa',gestiones:434,contactos:2,promesas:0,clGest:175,clCont:2,clProm:0},{name:'CPN',gestiones:0,contactos:0,promesas:0,clGest:0,clCont:0,clProm:0},{name:'Diners',gestiones:189,contactos:3,promesas:3,clGest:3,clCont:3,clProm:0}]},
+];
+
+// Variables de estado (sin filtro de fecha)
+let chartGest, chartCP, chartCamp;
+let globalAsesoresData = [...ASESORES_BASE];
+
+function setDates(){
+  const now=new Date();
+  const o={weekday:'long',year:'numeric',month:'long',day:'numeric'};
+  document.getElementById('fechaHoy').textContent=now.toLocaleDateString('es-MX',o);
+}
+setDates();
+
+function buildResumenConDatos(asesoresData){
+  const tc='rgba(255,255,255,.3)';
+  const gc='rgba(255,255,255,.04)';
+  const names=asesoresData.map(a=>a.nombre.split(' ')[0]+' '+(a.nombre.split(' ')[1]||''));
+  
+  // KPIs Globales
+  const totalG = asesoresData.reduce((s,a)=>s+a.total.gestiones,0);
+  const totalC = asesoresData.reduce((s,a)=>s+a.total.contactos,0);
+  const totalP = asesoresData.reduce((s,a)=>s+a.total.promesas,0);
+  const totalClGest = asesoresData.reduce((s,a)=>s+a.total.clGest,0);
+  const totalClCont = asesoresData.reduce((s,a)=>s+a.total.clCont,0);
+  const totalClProm = asesoresData.reduce((s,a)=>s+a.total.clProm,0);
+  const efectGlobal = totalG>0? (totalC/totalG*100).toFixed(1):0;
+  const convGlobal = totalClCont>0? (totalClProm/totalClCont*100).toFixed(1):0;
+  document.getElementById('globalMetrics').innerHTML = `
+    <div class="mc"><div class="lbl">Gestiones totales</div><div class="val">${totalG.toLocaleString()}</div><div class="sub">Período completo</div></div>
+    <div class="mc"><div class="lbl">Contactos</div><div class="val">${totalC}</div><div class="sub">Efectividad: <span class="ok">${efectGlobal}%</span></div></div>
+    <div class="mc"><div class="lbl">Promesas</div><div class="val">${totalP}</div><div class="sub">Conv. contacto: <span class="ok">${convGlobal}%</span></div></div>
+    <div class="mc"><div class="lbl">Clientes gestionados</div><div class="val">${totalClGest.toLocaleString()}</div><div class="sub">Base trabajada</div></div>
+    <div class="mc"><div class="lbl">Clientes contactados</div><div class="val">${totalClCont}</div><div class="sub">Alcance: ${totalClGest>0?((totalClCont/totalClGest)*100).toFixed(1):0}%</div></div>
+    <div class="mc hi"><div class="lbl">Clientes c/promesa</div><div class="val">${totalClProm}</div><div class="sub">${totalClCont>0?Math.round(totalClProm/totalClCont*100):0}% de contactados</div></div>
+  `;
+
+  if(chartGest) chartGest.destroy();
+  chartGest = new Chart(document.getElementById('chartGest'),{
+    type:'bar',
+    data:{labels:names,datasets:[{label:'Gestiones',data:asesoresData.map(a=>a.total.gestiones),backgroundColor:asesoresData.map(a=>a.site==='MÉXICO'?'rgba(74,143,212,.75)':'rgba(201,168,76,.75)'),borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc,font:{size:13}},grid:{color:gc}},y:{ticks:{color:tc},grid:{color:gc}}}}
+  });
+  if(chartCP) chartCP.destroy();
+  chartCP = new Chart(document.getElementById('chartCP'),{
+    type:'bar',data:{labels:names,datasets:[{label:'Contactos',data:asesoresData.map(a=>a.total.contactos),backgroundColor:'rgba(74,143,212,.75)'},{label:'Promesas',data:asesoresData.map(a=>a.total.promesas),backgroundColor:'rgba(201,168,76,.75)'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc}},y:{ticks:{color:tc}}}}
+  });
+  const campMap={};
+  asesoresData.forEach(a=>a.camps.forEach(c=>{ if(c.gestiones>0) campMap[c.name]=(campMap[c.name]||0)+c.gestiones; }));
+  const campLabels=Object.keys(campMap), campData=campLabels.map(k=>campMap[k]);
+  if(chartCamp) chartCamp.destroy();
+  chartCamp = new Chart(document.getElementById('chartCamp'),{type:'doughnut',data:{labels:campLabels,datasets:[{data:campData,backgroundColor:campLabels.map(c=>CAMP_COLORS[c]||'#888'),borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{position:'right',labels:{color:tc}}}}});
+  
+  const maxCont=Math.max(...asesoresData.map(a=>a.total.clCont),1);
+  const maxProm=Math.max(...asesoresData.map(a=>a.total.clProm),1);
+  const sortedCont=[...asesoresData].sort((a,b)=>b.total.clCont-a.total.clCont);
+  const sortedProm=[...asesoresData].sort((a,b)=>b.total.clProm-a.total.clProm);
+  document.getElementById('rankContactados').innerHTML=sortedCont.map(a=>`<div class="rank-row"><div class="rank-name">${a.nombre.split(' ')[0]}</div><div class="rank-bw"><div class="rank-bf" style="width:${Math.round(a.total.clCont/maxCont*100)}%;background:#4A8FD4;"></div></div><div class="rank-v">${a.total.clCont}</div></div>`).join('');
+  document.getElementById('rankPromesas').innerHTML=sortedProm.map(a=>`<div class="rank-row"><div class="rank-name">${a.nombre.split(' ')[0]}</div><div class="rank-bw"><div class="rank-bf" style="width:${Math.round(a.total.clProm/maxProm*100)}%;background:#C9A84C;"></div></div><div class="rank-v">${a.total.clProm}</div></div>`).join('');
+  
+  const maxG=Math.max(...asesoresData.map(a=>a.total.gestiones),1);
+  document.getElementById('tablaResumenBody').innerHTML=asesoresData.map(a=>{
+    const efect=a.total.gestiones>0?(a.total.contactos/a.total.gestiones*100).toFixed(1):0;
+    const conv=a.total.clCont>0?(a.total.clProm/a.total.clCont*100).toFixed(1):0;
+    return `<tr><td class="bold">${a.nombre}</td><td><span class="site-tag">${a.site}</span></td><td class="num">${a.total.gestiones.toLocaleString()}<div class="mini-bw"><div class="mini-bf" style="width:${Math.round(a.total.gestiones/maxG*100)}%;background:${a.site==='MÉXICO'?'#4A8FD4':'#C9A84C'};"></div></div></td><td class="num">${a.total.contactos}</td><td class="num">${a.total.promesas}</td><td class="num">${a.total.clGest.toLocaleString()}</td><td class="num">${a.total.clCont}</td><td class="num">${a.total.clProm}</td><td class="num ${efect>=15?'ok':efect>=8?'wn':'er'}">${efect}%</td><td class="num ${conv>=30?'ok':conv>=15?'wn':'er'}">${conv}%</td></tr>`;
+  }).join('');
+}
+
+function renderAsesoresConDatos(globalData){
+  const site=document.getElementById('fSite').value;
+  const camp=document.getElementById('fCamp').value;
+  let filtered = globalData.filter(a=>{
+    if(site!=='all'&&a.site!==site) return false;
+    if(camp!=='all'&&!a.camps.find(c=>c.name===camp&&c.gestiones>0)) return false;
+    return true;
+  }).map(a=>({...a, camps: camp==='all'?a.camps:a.camps.filter(c=>c.name===camp)}));
+  const g=filtered.reduce((s,a)=>s+a.total.gestiones,0);
+  const c=filtered.reduce((s,a)=>s+a.total.contactos,0);
+  const p=filtered.reduce((s,a)=>s+a.total.promesas,0);
+  const cg=filtered.reduce((s,a)=>s+a.total.clGest,0);
+  const cc=filtered.reduce((s,a)=>s+a.total.clCont,0);
+  const cp=filtered.reduce((s,a)=>s+a.total.clProm,0);
+  document.getElementById('metricsA').innerHTML=[{lbl:'Gestiones',val:g.toLocaleString()},{lbl:'Contactos',val:c},{lbl:'Promesas',val:p},{lbl:'Cl. gestionados',val:cg.toLocaleString()},{lbl:'Cl. contactados',val:cc},{lbl:'Cl. c/promesa',val:cp}].map(m=>`<div class="mc"><div class="lbl">${m.lbl}</div><div class="val">${m.val}</div><div class="sub">filtro</div></div>`).join('');
+  document.getElementById('agentList').innerHTML=filtered.length?filtered.map(a=>renderAsesorCardDinamico(a)).join(''):'<p style="color:var(--text-muted);">Sin asesores con ese filtro.</p>';
+}
+
+function renderAsesorCardDinamico(a){
+  const isOpen=expanded.has(a.code);
+  const t=a.total;
+  const efect=t.gestiones>0?(t.contactos/t.gestiones*100).toFixed(1):0;
+  const conv=t.clCont>0?(t.clProm/t.clCont*100).toFixed(1):0;
+  const activeCamps=a.camps.filter(c=>c.gestiones>0||c.promesas>0);
+  const campCards=activeCamps.map(c=>`<div class="cc" style="border-color:${CAMP_COLORS[c.name]||'#888'};"><div class="cc-name" style="color:${CAMP_COLORS[c.name]};">${c.name}</div><div class="cc-stats"><div class="cs">Gestiones<br><span>${c.gestiones.toLocaleString()}</span></div><div class="cs">Contactos<br><span>${c.contactos}</span></div><div class="cs">Promesas<br><span>${c.promesas}</span></div><div class="cs">Cl. contactados<br><span>${c.clCont}</span></div><div class="cs">Cl. c/promesa<br><span>${c.clProm}</span></div></div></div>`).join('');
+  const body=isOpen?`<div class="agent-body"><div class="ab-label">KPIs del turno</div><div class="kpi-row"><div class="kpi-block"><div class="kb-lbl">Gestiones</div><div class="kb-val">${t.gestiones.toLocaleString()}</div></div><div class="kpi-block"><div class="kb-lbl">Contactos</div><div class="kb-val">${t.contactos}</div></div><div class="kpi-block"><div class="kb-lbl">Promesas</div><div class="kb-val">${t.promesas}</div></div><div class="kpi-block"><div class="kb-lbl">Efect.</div><div class="kb-val">${efect}%</div></div><div class="kpi-block"><div class="kb-lbl">Conv.prom</div><div class="kb-val">${conv}%</div></div><div class="kpi-block"><div class="kb-lbl">Cl. contactados</div><div class="kb-val">${t.clCont}</div></div></div><div class="ab-label">Distribución campañas</div><div class="dist-bar">${activeCamps.map(c=>`<div class="db-seg" style="width:${Math.round(c.gestiones/t.gestiones*100)}%;background:${CAMP_COLORS[c.name]}"></div>`).join('')}</div><div class="camps-grid">${campCards}</div></div>`:'';
+  return `<div class="agent-card"><div class="agent-header" onclick="toggleAsesor('${a.code}')"><div class="avatar">${(a.nombre[0]||'')+(a.nombre.split(' ')[1]?.[0]||'')}</div><div class="ag-meta"><div class="ag-name">${a.nombre}</div><div class="ag-sub"><span class="site-tag">${a.site}</span></div></div><div class="ag-right"><div class="ag-kpi"><div>Gestiones <span>${t.gestiones}</span></div><div>Contactos <span>${t.contactos}</span></div><div>Efect. <span class="${efect>=15?'hi':efect>=8?'wa':''}">${efect}%</span></div></div><div class="caret ${isOpen?'open':''}">▼</div></div></div>${body}</div>`;
+}
+
+const CAMP_COLORS = { Directv: '#C9A84C', Movistar:'#4A8FD4', PagueYa:'#3DB87A', CPN:'#D4604C', Diners:'#808080' };
+const expanded = new Set();
+function toggleAsesor(code){ if(expanded.has(code)) expanded.delete(code); else expanded.add(code); renderAsesoresConDatos(globalAsesoresData); }
+function renderAsesores(){ renderAsesoresConDatos(globalAsesoresData); }
+function renderHorarios(){ const tb=document.getElementById('tablaHorarios'); if(tb) tb.innerHTML='<tr><td colspan="7" style="color:var(--text-muted);">Datos de horarios pendientes de carga.</td></tr>'; }
+function showView(id,btn){ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active')); document.getElementById('view-'+id).classList.add('active'); if(btn) btn.classList.add('active'); if(id==='resumen') buildResumenConDatos(globalAsesoresData); if(id==='asesores') renderAsesoresConDatos(globalAsesoresData); }
+
+// Inicializar todo con datos completos
+buildResumenConDatos(globalAsesoresData);
+renderAsesoresConDatos(globalAsesoresData);
+renderHorarios();
+</script>
+</body>
+</html>
