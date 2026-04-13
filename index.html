@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Abril | Control Horarios & Pagos</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+/* =================================================
+   VARIABLES — edita aquí para personalizar
+================================================= */
+:root {
+  --navy:         #08111F;
+  --navy-mid:     #0E1E35;
+  --navy-card:    #111F38;
+  --navy-hover:   #162742;
+  --navy-subtle:  #0B1626;
+  --gold:         #C9A84C;
+  --gold-light:   #E2C97E;
+  --gold-pale:    #F5E9C8;
+  --gold-dim:     rgba(201,168,76,0.13);
+  --gold-glow:    rgba(201,168,76,0.06);
+  --white:        #FFFFFF;
+  --text-primary: rgba(255,255,255,0.92);
+  --text-sub:     rgba(255,255,255,0.60);
+  --text-muted:   rgba(255,255,255,0.35);
+  --border:       rgba(201,168,76,0.18);
+  --border-soft:  rgba(255,255,255,0.06);
+  --success:      #3DB87A;
+  --warning:      #D4A844;
+  --danger:       #D45C4C;
+  --info:         #4A8FD4;
+  --radius:       6px;
+  --radius-lg:    10px;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body:    'DM Sans', sans-serif;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:18px;scroll-behavior:smooth;}
+body{
+  font-family:var(--font-body);
+  background:var(--navy);
+  color:var(--text-primary);
+  min-height:100vh;
+  font-weight:300;
+  line-height:1.6;
+}
+
+.header{
+  background:var(--navy-mid);
+  border-bottom:1px solid var(--border);
+  padding:0 2.25rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  height:76px;
+  position:sticky;top:0;z-index:200;
+}
+.h-brand{display:flex;align-items:center;gap:16px;}
+.h-gem{
+  width:40px;height:40px;
+  border:2px solid var(--gold);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
+}
+.h-gem::after{
+  content:'';width:14px;height:14px;
+  background:var(--gold);border-radius:50%;
+}
+.h-title{
+  font-family:var(--font-display);
+  font-size:1.65rem;font-weight:500;
+  color:var(--white);letter-spacing:.02em;
+}
+.h-sub{
+  font-size:.72rem;color:var(--gold);
+  letter-spacing:.14em;text-transform:uppercase;
+  margin-top:2px;
+}
+.h-right{text-align:right;}
+.h-date{font-size:.85rem;color:var(--text-sub);letter-spacing:.04em;}
+.h-date strong{display:block;color:var(--text-primary);font-weight:400;font-size:.95rem;}
+
+.nav{
+  background:var(--navy-mid);
+  border-bottom:1px solid var(--border);
+  display:flex;padding:0 2.25rem;gap:0;
+}
+.nav-btn{
+  padding:1rem 1.75rem;
+  font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--text-muted);cursor:pointer;
+  border:none;background:none;
+  border-bottom:3px solid transparent;
+  transition:all .18s;font-family:var(--font-body);
+}
+.nav-btn:hover{color:var(--text-sub);}
+.nav-btn.active{color:var(--gold);border-bottom-color:var(--gold);}
+
+.view{display:none;padding:2rem 2.25rem;}
+.view.active{display:block;}
+.view-title{
+  font-family:var(--font-display);
+  font-size:2rem;font-weight:500;
+  letter-spacing:.01em;margin-bottom:4px;
+}
+.view-sub{
+  font-size:.78rem;color:var(--gold);
+  letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:.1rem;
+}
+.gold-bar{width:40px;height:2px;background:var(--gold);margin:.6rem 0 1.5rem;}
+.mb{margin-bottom:14px;}
+.mt{margin-top:14px;}
+
+.metrics-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+  gap:12px;margin-bottom:1.4rem;
+}
+.mc{
+  background:var(--navy-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:1.2rem 1.35rem;
+  position:relative;overflow:hidden;
+}
+.mc::before{
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  opacity:.7;
+}
+.mc .lbl{
+  font-size:.72rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--gold);
+  margin-bottom:8px;
+}
+.mc .val{
+  font-family:var(--font-display);
+  font-size:2.6rem;font-weight:500;
+  color:var(--white);line-height:1;
+}
+.mc .sub{font-size:.78rem;color:var(--text-muted);margin-top:6px;}
+.mc.hi .val{color:var(--success);}
+.mc.wa .val{color:var(--warning);}
+
+.card{
+  background:var(--navy-card);
+  border:1px solid var(--border-soft);
+  border-radius:var(--radius-lg);
+  padding:1.4rem 1.6rem;
+}
+.card-title{
+  font-size:.75rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--gold);
+  margin-bottom:1.1rem;
+}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;}
+@media(max-width:680px){.grid2,.grid3{grid-template-columns:1fr;}}
+
+.table-wrap{overflow-x:auto;}
+table.gt{
+  width:100%;border-collapse:collapse;
+  font-size:.92rem;
+}
+table.gt th{
+  text-align:left;
+  font-size:.7rem;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--gold);
+  padding:0 14px 12px 0;
+  border-bottom:1px solid var(--border);
+  font-weight:400;white-space:nowrap;
+}
+table.gt td{
+  padding:11px 14px 11px 0;
+  border-bottom:1px solid var(--border-soft);
+  color:var(--text-sub);vertical-align:middle;
+  white-space:nowrap;
+}
+table.gt tr:last-child td{border-bottom:none;}
+table.gt tr:hover td{background:rgba(255,255,255,.015);}
+table.gt td.bold{color:var(--text-primary);font-weight:400;}
+table.gt td.num{text-align:right;font-variant-numeric:tabular-nums;}
+table.gt th.num{text-align:right;}
+.ok{color:var(--success);}
+.wn{color:var(--warning);}
+.er{color:var(--danger);}
+
+.camp-tag{
+  display:inline-block;font-size:.75rem;
+  padding:3px 10px;border-radius:3px;
+  border:1px solid;letter-spacing:.04em;
+  font-weight:400;white-space:nowrap;
+}
+.site-tag{
+  display:inline-block;font-size:.75rem;
+  padding:3px 9px;border-radius:3px;
+  border:1px solid var(--border);
+  color:var(--gold-light);letter-spacing:.04em;
+}
+
+.mini-bw{
+  display:inline-block;width:80px;height:5px;
+  background:var(--navy-subtle);border-radius:2px;
+  overflow:hidden;vertical-align:middle;margin-left:6px;
+}
+.mini-bf{height:100%;border-radius:2px;}
+
+.agent-card{
+  background:var(--navy-card);
+  border:1px solid var(--border-soft);
+  border-radius:var(--radius-lg);
+  margin-bottom:10px;overflow:hidden;
+  transition:border-color .18s;
+}
+.agent-card:hover{border-color:var(--border);}
+.agent-header{
+  display:flex;align-items:center;gap:14px;
+  padding:15px 18px;cursor:pointer;user-select:none;
+}
+.agent-header:hover{background:rgba(255,255,255,.02);}
+.avatar{
+  width:44px;height:44px;border-radius:50%;
+  background:var(--gold-dim);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.82rem;font-weight:500;color:var(--gold);
+  flex-shrink:0;letter-spacing:.02em;
+}
+.ag-meta{flex:1;min-width:0;}
+.ag-name{font-size:1rem;font-weight:400;color:var(--white);}
+.ag-sub{font-size:.78rem;color:var(--text-muted);margin-top:2px;}
+.ag-right{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.caret{font-size:.8rem;color:var(--text-muted);transition:transform .2s;}
+.caret.open{transform:rotate(180deg);}
+.ag-kpi{
+  display:flex;gap:18px;
+  font-size:.78rem;color:var(--text-muted);
+  flex-wrap:wrap;
+}
+.ag-kpi span{color:var(--text-sub);font-weight:400;}
+.ag-kpi .hi{color:var(--success);}
+.ag-kpi .wa{color:var(--warning);}
+.agent-body{border-top:1px solid var(--border-soft);padding:0 18px 18px;}
+.ab-label{
+  font-size:.7rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--gold);
+  padding:14px 0 9px;
+}
+.kpi-row{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+  gap:9px;margin-bottom:12px;
+}
+.kpi-block{
+  background:var(--navy-subtle);
+  border-radius:var(--radius);padding:10px 13px;
+}
+.kb-lbl{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px;}
+.kb-val{font-family:var(--font-display);font-size:1.4rem;font-weight:500;color:var(--white);}
+.camps-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  gap:9px;margin-bottom:12px;
+}
+.cc{
+  background:var(--navy-subtle);
+  border-radius:var(--radius);padding:12px 14px;
+  border-left:2px solid;
+}
+.cc-name{font-size:.82rem;font-weight:500;margin-bottom:7px;}
+.cc-stats{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;}
+.cs{font-size:.75rem;color:var(--text-muted);}
+.cs span{color:var(--text-sub);}
+.dist-bar{display:flex;gap:2px;height:6px;border-radius:3px;overflow:hidden;margin:10px 0 7px;}
+.db-seg{height:100%;}
+.filtros-asesores{
+  background: var(--navy-mid);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.8rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.filtro-group{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--navy-subtle);
+  padding: 0.5rem 1.2rem;
+  border-radius: 48px;
+  border: 1px solid var(--border-soft);
+  transition: all 0.2s;
+}
+.filtro-group:hover{
+  border-color: var(--gold-dim);
+  background: var(--navy-card);
+}
+.filtro-group label{
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 500;
+}
+.filtro-group select{
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-family: var(--font-body);
+  padding: 6px 8px;
+  cursor: pointer;
+  outline: none;
+  font-weight: 400;
+}
+.filtro-group select option{
+  background: var(--navy-card);
+  color: var(--text-primary);
+}
+.filtro-icon{
+  font-size: 1rem;
+  color: var(--gold);
+  opacity: 0.8;
+}
+.horario-num {
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.horario-ok {
+  color: #3DB87A;
+  background: rgba(61,184,122,0.1);
+}
+.horario-warning {
+  color: #D4A844;
+  background: rgba(212,168,68,0.1);
+}
+.horario-danger {
+  color: #D45C4C;
+  background: rgba(212,92,76,0.1);
+}
+.rank-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.rank-name {
+  font-size: 0.85rem;
+  color: var(--text-sub);
+  width: 140px;
+  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rank-bw {
+  flex: 1;
+  height: 8px;
+  background: var(--navy-subtle);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.rank-bf {
+  height: 100%;
+  border-radius: 4px;
+}
+.rank-v {
+  font-size: 0.82rem;
+  color: var(--text-sub);
+  min-width: 36px;
+  text-align: right;
+}
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.leg-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: var(--text-sub);
+}
+.leg-sq {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="h-brand">
+    <div class="h-gem"></div>
+    <div><div class="h-title">Gestión de Cobranza</div></div>
+  </div>
+  <div class="h-right"><div class="h-date"><strong id="fechaHoy"></strong></div></div>
+</header>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="showView('resumen',this)">Resumen general</button>
+  <button class="nav-btn" onclick="showView('asesores',this)">Asesores</button>
+  <button class="nav-btn" onclick="showView('horarios',this)">Horarios</button>
+</nav>
+
+<!-- VIEW RESUMEN -->
+<div class="view active" id="view-resumen">
+  <div class="view-title">Resumen operativo</div>
+  <div class="view-sub">Cobranza · pagos · período completo</div>
+  <div class="gold-bar"></div>
+  <div class="metrics-grid" id="globalMetrics"></div>
+  <div class="grid3">
+    <div class="card mb"><div class="card-title">Gestiones por asesor</div><div style="position:relative;width:100%;height:250px;"><canvas id="chartGest"></canvas></div></div>
+    <div class="card mb"><div class="card-title">Monto total pagos por asesor</div><div style="position:relative;width:100%;height:250px;"><canvas id="chartPagos"></canvas></div></div>
+    <div class="card mb"><div class="card-title">Gestiones por campaña</div><div style="position:relative;width:100%;height:250px;"><canvas id="chartCamp"></canvas></div></div>
+  </div>
+  <div class="grid2">
+    <div class="card mb"><div class="card-title">Contactos vs promesas por asesor</div><div class="legend"><div class="leg-item"><div class="leg-sq" style="background:#4A8FD4;"></div>Contactos</div><div class="leg-item"><div class="leg-sq" style="background:#C9A84C;"></div>Promesas</div></div><div style="position:relative;width:100%;height:270px;"><canvas id="chartCP"></canvas></div></div>
+    <div class="card mb"><div class="card-title">Ranking — clientes contactados</div><div id="rankContactados"></div><div class="card-title mt">Ranking — clientes c/promesa</div><div id="rankPromesas"></div></div>
+  </div>
+  <div class="card"><div class="card-title">Detalle por asesor — totales con pagos</div><div class="table-wrap"><table class="gt" id="tablaResumen"><thead><tr><th>Asesor</th><th>Site</th><th class="num">Gestiones</th><th class="num">Contactos</th><th class="num">Promesas</th><th class="num">Pagos indirectos</th><th class="num">Monto pagos</th><th class="num">Cl. gestionados</th><th class="num">Cl. contactados</th><th class="num">Cl. c/promesa</th><th class="num">Cl. con pago</th><th class="num">Contacto</th><th class="num">Conv. promesa</th></tr></thead><tbody id="tablaResumenBody"></tbody></table></div></div>
+</div>
+
+<!-- VIEW ASESORES -->
+<div class="view" id="view-asesores">
+  <div class="view-title">Asesores</div>
+  <div class="view-sub">Detalle por asesor y campaña con pagos</div>
+  <div class="gold-bar"></div>
+  <div class="filtros-asesores">
+    <div class="filtro-group"><span class="filtro-icon">📍</span><label>SITE</label><select id="fSite" onchange="renderAsesores()"><option value="all">Todos los sites</option><option value="EXTERNO">Externo</option><option value="MÉXICO">México</option></select></div>
+    <div class="filtro-group"><span class="filtro-icon">📢</span><label>CAMPAÑA</label><select id="fCamp" onchange="renderAsesores()"><option value="all">Todas las campañas</option><option value="Directv">Directv</option><option value="Movistar">Movistar</option><option value="PagueYa">PagueYa</option><option value="CPN">CPN</option><option value="Diners">Diners</option></select></div>
+  </div>
+  <div class="metrics-grid" id="metricsA"></div> 
+  <div id="agentList"></div>
+</div>
+
+<!-- VIEW HORARIOS -->
+<div class="view" id="view-horarios">
+  <div class="view-title">Control de horarios</div>
+  <div class="gold-bar"></div>
+  <div class="metrics-grid" id="horariosMetrics"></div>
+  <div class="card">
+    <div class="card-title">Registro de horarios</div>
+    <div class="table-wrap">
+      <table class="gt">
+        <thead>
+          <tr><th>Asesor</th><th class="num">Tiempo conexión (hrs)</th><th class="num">Horas Adeudadas</th><th class="num">Break (min)</th><th class="num">Baño (min)</th><th class="num">% Cumplimiento</th></tr>
+        </thead>
+        <tbody id="tablaHorarios"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+// DATOS COMPLETOS CON PAGOS POR CAMPAÑA
+const ASESORES_COMPLETOS = [
+  {code:'C.YDELACRUZ',site:'EXTERNO',nombre:'Yudixa De La Cruz García',
+   total:{gestiones:1360,contactos:141,promesas:88,pagosSinPromesa:11383.27,montoPagos:1796.20,clGest:979,clCont:140,clProm:88,clPago:15},
+   camps:[{name:'Directv',gestiones:0,contactos:0,promesas:0,pagosSinPromesa:0,montoPagos:0,clGest:0,clCont:0,clProm:0,clPago:0},
+          {name:'Movistar',gestiones:1151,contactos:122,promesas:71,pagosSinPromesa:1411.37,montoPagos:860.70,clGest:889,clCont:121,clProm:71,clPago:5},
+          {name:'PagueYa',gestiones:0,contactos:0,promesas:0,pagosSinPromesa:0,montoPagos:0,clGest:0,clCont:0,clProm:0,clPago:0},
+          {name:'CPN',gestiones:209,contactos:19,promesas:17,pagosSinPromesa:9971.90,montoPagos:935.50,clGest:90,clCont:19,clProm:17,clPago:10}]},
+  {code:'C-BIBERO',site:'EXTERNO',nombre:'Betzabeth Romina Ibero Gómez',
+   total:{gestiones:947,contactos:149,promesas:93,pagosSinPromesa:5983.88,montoPagos:3576.27,clGest:831,clCont:144,clProm:93,clPago:27},
+   camps:[{name:'Directv',gestiones:0,contactos:0,promesas:0,pagosSinPromesa:0,montoPagos:0,clGest:0,clCont:0,clProm:0,clPago:0},
+          {name:'Movistar',gestiones:795,contactos:140,promesas:84,pagosSinPromesa:1514.08,montoPagos:1243.17,clGest:757,clCont:135,clProm:84,clPago:21},
+          {name:'PagueYa',gestiones:0,contactos:0,promesas:0,pagosSinPromesa:0,montoPagos:0,clGest:0,clCont:0,clProm:0,clPago:0},
+          {name:'CPN',gestiones:152,contactos:9,promesas:9,pagosSinPromesa:4469.80,montoPagos:2333.10,clGest:74,clCont:9,clProm:9,clPago:6}]},
+  {code:'C-CSALAZAR',site:'EXTERNO',nombre:'Claritza Carolina Salazar Quijada',
+   total:{gestiones:1189,contactos:178,promesas:63,pagosSinPromesa:3677.03,montoPagos:2561.37,clGest:929,clCont:178,clProm:62,clPago:12},
+   camps:[{name:'Directv',gestiones:0,contactos:0,promesas:0,pagosSinPromesa:0,montoPagos:0,clGest:0,clCont:0,clProm:0,clPago:0},
+          {name:'Movistar',gestiones:1011,contactos:166,promesas:51,pagosSinPromesa:519.23,montoPagos:4.17,clGest:857,clCont:166,clProm:50,clPago:1},
+          {name:'PagueYa',gestiones:0,contactos:0,promesas:0,pagosSinPromesa:0,montoPagos:0,clGest:0,clCont:0,clProm:0,clPago:0},
+          {name:'CPN',gestiones:178,contactos:12,promesas:12,pagosSinPromesa:3157.80,montoPagos:2557.20,clGest:72,clCont:12,clProm:12,clPago:11}]},
+  {code:'C-MGONZALEZ',site:'MÉXICO',nombre:'Martín González Santos',
+   total:{gestiones:1831,contactos:124,promesas:28,pagosSinPromesa:0,montoPagos:0,clGest:1603,clCont:124,clProm:28,clPago:0},
+   camps:[{name:'Directv',gestiones:1831,contactos:124,promesas:28,pagosSinPromesa:0,montoPagos:0,clGest:1603,clCont:124,clProm:28,clPago:0},
+          {name:'Movistar',gestiones:0,contactos:0,promesas:0,pagosSinPromesa:0,montoPagos:0,clGest:0,clCont:0,clProm:0,clPago:0},
+          {name:'PagueYa',gestiones:0,contactos:0,promesas:0,pagosSinPromesa:0,montoPagos:0,clGest:0,clCont:0,clProm:0,clPago:0},
+          {name:'CPN',gestiones:0,contactos:0,promesas:0,pagosSinPromesa:0,montoPagos:0,clGest:0,clCont:0,clProm:0,clPago:0}]},
+  {code:'C-MHERNANDEZ',site:'MÉXICO',nombre:'Magaly Hernández',
+   total:{gestiones:1414,contactos:177,promesas:23,pagosSinPromesa:1292.28,montoPagos:43.60,clGest:1255,clCont:171,clProm:21,clPago:4},
+   camps:[{name:'Directv',gestiones:0,contactos:0,promesas:0,pagosSinPromesa:0,montoPagos:0,clGest:0,clCont:0,clProm:0,clPago:0},
+          {name:'Movistar',gestiones:1409,contactos:177,promesas:23,pagosSinPromesa:1292.28,montoPagos:43.60,clGest:1255,clCont:171,clProm:21,clPago:4},
+          {name:'PagueYa',gestiones:5,contactos:0,promesas:0,pagosSinPromesa:0,montoPagos:0,clGest:0,clCont:0,clProm:0,clPago:0},
+          {name:'CPN',gestiones:0,contactos:0,promesas:0,pagosSinPromesa:0,montoPagos:0,clGest:0,clCont:0,clProm:0,clPago:0}]},
+  {code:'C-NCASTREJON',site:'MÉXICO',nombre:'Nataly Castrejón',
+   total:{gestiones:1380,contactos:182,promesas:59,pagosSinPromesa:842.79,montoPagos:192.39,clGest:1049,clCont:176,clProm:58,clPago:11},
+   camps:[{name:'Directv',gestiones:0,contactos:0,promesas:0,pagosSinPromesa:0,montoPagos:0,clGest:0,clCont:0,clProm:0,clPago:0},
+          {name:'Movistar',gestiones:1339,contactos:179,promesas:58,pagosSinPromesa:842.79,montoPagos:192.39,clGest:1020,clCont:173,clProm:57,clPago:11},
+          {name:'PagueYa',gestiones:33,contactos:2,promesas:0,pagosSinPromesa:0,montoPagos:0,clGest:22,clCont:2,clProm:0,clPago:0},
+          {name:'CPN',gestiones:8,contactos:1,promesas:1,pagosSinPromesa:0,montoPagos:0,clGest:7,clCont:1,clProm:1,clPago:0}]},
+  {code:'C-NRESENDIZ',site:'MÉXICO',nombre:'Nadiram Reséndiz Peralta',
+   total:{gestiones:1604,contactos:63,promesas:12,pagosSinPromesa:0,montoPagos:0,clGest:1351,clCont:60,clProm:11,clPago:0},
+   camps:[{name:'Directv',gestiones:1592,contactos:63,promesas:12,pagosSinPromesa:0,montoPagos:0,clGest:1351,clCont:60,clProm:11,clPago:0},
+          {name:'Movistar',gestiones:0,contactos:0,promesas:0,pagosSinPromesa:0,montoPagos:0,clGest:0,clCont:0,clProm:0,clPago:0},
+          {name:'PagueYa',gestiones:12,contactos:0,promesas:0,pagosSinPromesa:0,montoPagos:0,clGest:0,clCont:0,clProm:0,clPago:0},
+          {name:'CPN',gestiones:0,contactos:0,promesas:0,pagosSinPromesa:0,montoPagos:0,clGest:0,clCont:0,clProm:0,clPago:0}]},
+  {code:'C-SMILAGROS',site:'EXTERNO',nombre:'Segura Lenis Milagros Del Valle',
+   total:{gestiones:1442,contactos:204,promesas:76,pagosSinPromesa:32479.84,montoPagos:824.20,clGest:1248,clCont:200,clProm:76,clPago:18},
+   camps:[{name:'Directv',gestiones:0,contactos:0,promesas:0,pagosSinPromesa:0,montoPagos:0,clGest:0,clCont:0,clProm:0,clPago:0},
+          {name:'Movistar',gestiones:1140,contactos:187,promesas:60,pagosSinPromesa:1083.84,montoPagos:150.60,clGest:1100,clCont:183,clProm:60,clPago:6},
+          {name:'PagueYa',gestiones:0,contactos:0,promesas:0,pagosSinPromesa:0,montoPagos:0,clGest:0,clCont:0,clProm:0,clPago:0},
+          {name:'CPN',gestiones:302,contactos:17,promesas:16,pagosSinPromesa:31396.00,montoPagos:673.60,clGest:148,clCont:17,clProm:16,clPago:12}]},
+  {code:'C-SVELAZQUEZ',site:'MÉXICO',nombre:'Sandra Paola Velázquez Reyes',
+   total:{gestiones:2177,contactos:195,promesas:49,pagosSinPromesa:18108.02,montoPagos:4443.60,clGest:1727,clCont:179,clProm:48,clPago:33},
+   camps:[{name:'Directv',gestiones:0,contactos:0,promesas:0,pagosSinPromesa:0,montoPagos:0,clGest:0,clCont:0,clProm:0,clPago:0},
+          {name:'Movistar',gestiones:522,contactos:110,promesas:15,pagosSinPromesa:1073.12,montoPagos:0,clGest:447,clCont:106,clProm:15,clPago:0},
+          {name:'PagueYa',gestiones:1279,contactos:40,promesas:12,pagosSinPromesa:0,montoPagos:0,clGest:1010,clCont:35,clProm:12,clPago:0},
+          {name:'CPN',gestiones:376,contactos:45,promesas:22,pagosSinPromesa:17034.90,montoPagos:4443.60,clGest:270,clCont:38,clProm:21,clPago:33}]},
+  {code:'C-JROMERO',site:'MÉXICO',nombre:'Juan Manuel Romero',
+   total:{gestiones:751,contactos:12,promesas:6,pagosSinPromesa:0,montoPagos:245.18,clGest:472,clCont:12,clProm:6,clPago:1},
+   camps:[{name:'Directv',gestiones:0,contactos:0,promesas:0,pagosSinPromesa:0,montoPagos:0,clGest:0,clCont:0,clProm:0,clPago:0},
+          {name:'Movistar',gestiones:0,contactos:0,promesas:0,pagosSinPromesa:0,montoPagos:0,clGest:0,clCont:0,clProm:0,clPago:0},
+          {name:'PagueYa',gestiones:434,contactos:2,promesas:0,pagosSinPromesa:0,montoPagos:0,clGest:175,clCont:2,clProm:0,clPago:0},
+          {name:'CPN',gestiones:0,contactos:0,promesas:0,pagosSinPromesa:0,montoPagos:0,clGest:0,clCont:0,clProm:0,clPago:0},
+          {name:'Diners',gestiones:317,contactos:10,promesas:6,pagosSinPromesa:0,montoPagos:245.18,clGest:297,clCont:10,clProm:6,clPago:1}]}
+];
+
+// HORARIOS - Conexión mínima 6 horas, break máx 30, baño máx 12
+const HORARIOS_DATA = [
+  { code: 'C.YDELACRUZ', tiempoReal: 5.20, horasAdeudadas: 2.0, breakMin: 30, banoMin: 9.5 },
+  { code: 'C-BIBERO', tiempoReal: 5.10, horasAdeudadas: 2.0, breakMin: 28, banoMin: 5.59 },
+  { code: 'C-CSALAZAR', tiempoReal: 6.0, horasAdeudadas: 0.0, breakMin: 20, banoMin: 9 },
+  { code: 'C-MGONZALEZ', tiempoReal: 6.2, horasAdeudadas: 0.0, breakMin: 29, banoMin: 8 },
+  { code: 'C-MHERNANDEZ', tiempoReal: 5.5, horasAdeudadas: 1.0, breakMin: 30, banoMin: 12.2 },
+  { code: 'C-NCASTREJON', tiempoReal: 6.0, horasAdeudadas: 0.0, breakMin: 26, banoMin: 7 },
+  { code: 'C-NRESENDIZ', tiempoReal: 6.0, horasAdeudadas: 0.0, breakMin: 30, banoMin: 11.3},
+  { code: 'C-SMILAGROS', tiempoReal: 6.0, horasAdeudadas: 0.0, breakMin: 20, banoMin: 8.3 },
+  { code: 'C-SVELAZQUEZ', tiempoReal: 6.0, horasAdeudadas: 0.0, breakMin: 30, banoMin: 12 },
+  { code: 'C-JROMERO', tiempoReal: 5.0, horasAdeudadas: 3.0, breakMin: 29, banoMin: 6 },
+];
+
+const CAMP_COLORS = { Directv: '#C9A84C', Movistar:'#4A8FD4', PagueYa:'#3DB87A', CPN:'#D4604C', Diners:'#808080' };
+let chartGest, chartCP, chartCamp, chartPagos;
+let globalAsesoresData = [...ASESORES_COMPLETOS];
+const expanded = new Set();
+
+function setDates(){ const now=new Date(); document.getElementById('fechaHoy').textContent=now.toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'}); }
+setDates();
+
+function formatMoney(amount) {
+  return '$' + amount.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function getTimeClass(valor, limite, type) {
+  if (type === 'conexion') {
+    if (valor >= 6) return 'horario-ok';
+    if (valor >= 5) return 'horario-warning';
+    return 'horario-danger';
+  } else {
+    if (valor <= limite) return 'horario-ok';
+    if (valor <= limite + 10) return 'horario-warning';
+    return 'horario-danger';
+  }
+}
+
+// Nueva función para obtener la clase de horas adeudadas
+function getHorasAdeudadasClass(horasAdeudadas) {
+  if (horasAdeudadas === 0) return 'horario-ok';
+  if (horasAdeudadas < 1) return 'horario-warning';
+  return 'horario-danger';
+}
+
+function calcularCumplimiento(tiempoReal, breakMin, banoMin) {
+  let penalizacion = 0;
+  // Conexión: mínimo esperado 6 horas
+  if (tiempoReal < 6) {
+    penalizacion += (6 - tiempoReal) * 15;
+  }
+  // Break: máximo 30 min
+  if (breakMin > 30) {
+    penalizacion += (breakMin - 30) * 1.5;
+  }
+  // Baño: máximo 12 min
+  if (banoMin > 12) {
+    penalizacion += (banoMin - 12) * 1.5;
+  }
+  // Bonus por exceder conexión
+  let bonus = tiempoReal > 6 ? Math.min(15, (tiempoReal - 6) * 5) : 0;
+  let cumplimiento = Math.min(100, Math.max(0, Math.round(100 - penalizacion + bonus)));
+  let estadoClase = cumplimiento >= 90 ? 'ok' : (cumplimiento >= 75 ? 'wn' : 'er');
+  return { porcentaje: cumplimiento, estadoClase };
+}
+
+function renderHorarios() {
+  const tbody = document.getElementById('tablaHorarios');
+  if (!tbody) return;
+  let html = '';
+  for (let h of HORARIOS_DATA) {
+    const asesor = ASESORES_COMPLETOS.find(a => a.code === h.code);
+    const nombre = asesor ? asesor.nombre : h.code;
+    const conexionClass = getTimeClass(h.tiempoReal, 6, 'conexion');
+    const horasAdeudadasClass = getHorasAdeudadasClass(h.horasAdeudadas);
+    const breakClass = getTimeClass(h.breakMin, 30, 'pausa');
+    const banoClass = getTimeClass(h.banoMin, 12, 'pausa');
+    const cumplimiento = calcularCumplimiento(h.tiempoReal, h.breakMin, h.banoMin);
+    html += `<tr>
+      <td class="bold">${nombre}</td>
+      <td class="num"><span class="horario-num ${conexionClass}">${h.tiempoReal.toFixed(1)} hrs</span></td>
+      <td class="num"><span class="horario-num ${horasAdeudadasClass}">${h.horasAdeudadas.toFixed(1)} hrs</span></td>
+      <td class="num"><span class="horario-num ${breakClass}">${h.breakMin} min</span></td>
+      <td class="num"><span class="horario-num ${banoClass}">${h.banoMin} min</span></td>
+      <td class="num ${cumplimiento.estadoClase}"><strong>${cumplimiento.porcentaje}%</strong></td>
+    </tr>`;
+  }
+  tbody.innerHTML = html;
+  
+  const totalAsesores = HORARIOS_DATA.length;
+  const cumplimientoPromedio = Math.round(HORARIOS_DATA.reduce((s,h) => {
+    const cumpl = calcularCumplimiento(h.tiempoReal, h.breakMin, h.banoMin);
+    return s + cumpl.porcentaje;
+  }, 0) / totalAsesores);
+  const conexionPromedio = (HORARIOS_DATA.reduce((s,h) => s + h.tiempoReal, 0) / totalAsesores).toFixed(1);
+  const horasAdeudadasPromedio = (HORARIOS_DATA.reduce((s,h) => s + h.horasAdeudadas, 0) / totalAsesores).toFixed(1);
+  
+  document.getElementById('horariosMetrics').innerHTML = `
+    <div class="mc"><div class="lbl">Cumplimiento promedio</div><div class="val ${cumplimientoPromedio>=90?'hi':cumplimientoPromedio>=75?'wa':'er'}">${cumplimientoPromedio}%</div><div class="sub">general</div></div>
+    <div class="mc"><div class="lbl">Conexión promedio</div><div class="val">${conexionPromedio} hrs</div><div class="sub">mínimo: 6 hrs</div></div>
+    <div class="mc"><div class="lbl">Horas Adeudadas Prom.</div><div class="val">${horasAdeudadasPromedio} hrs</div><div class="sub">total equipo</div></div>
+    <div class="mc"><div class="lbl">Break promedio</div><div class="val">${Math.round(HORARIOS_DATA.reduce((s,h)=>s+h.breakMin,0)/totalAsesores)} min</div><div class="sub">máx: 30 min</div></div>
+    <div class="mc"><div class="lbl">Baño promedio</div><div class="val">${Math.round(HORARIOS_DATA.reduce((s,h)=>s+h.banoMin,0)/totalAsesores)} min</div><div class="sub">máx: 12 min</div></div>
+  `;
+}
+
+function buildResumenConDatos(asesoresData){
+  const tc='rgba(255,255,255,.3)';
+  const gc='rgba(255,255,255,.04)';
+  const names=asesoresData.map(a=>a.nombre.split(' ')[0]+' '+(a.nombre.split(' ')[1]||''));
+  const totalG = asesoresData.reduce((s,a)=>s+a.total.gestiones,0);
+  const totalC = asesoresData.reduce((s,a)=>s+a.total.contactos,0);
+  const totalP = asesoresData.reduce((s,a)=>s+a.total.promesas,0);
+  const totalPagosSinPromesa = asesoresData.reduce((s,a)=>s+a.total.pagosSinPromesa,0);
+  const totalMontoPagos = asesoresData.reduce((s,a)=>s+a.total.montoPagos,0);
+  const totalClPago = asesoresData.reduce((s,a)=>s+a.total.clPago,0);
+  const totalClGest = asesoresData.reduce((s,a)=>s+a.total.clGest,0);
+  const totalClCont = asesoresData.reduce((s,a)=>s+a.total.clCont,0);
+  const totalClProm = asesoresData.reduce((s,a)=>s+a.total.clProm,0);
+  const efectGlobal = totalG>0? (totalC/totalG*100).toFixed(1):0;
+  const convGlobal = totalClCont>0? (totalClProm/totalClCont*100).toFixed(1):0;
+  
+  document.getElementById('globalMetrics').innerHTML = `
+    <div class="mc"><div class="lbl">Gestiones totales</div><div class="val">${totalG.toLocaleString()}</div><div class="sub">Período completo</div></div>
+    <div class="mc"><div class="lbl">Contactos</div><div class="val">${totalC}</div><div class="sub">Contactabilidad: <span class="ok">${efectGlobal}%</span></div></div>
+    <div class="mc"><div class="lbl">Promesas</div><div class="val">${totalP}</div><div class="sub">Conv. contacto: <span class="ok">${convGlobal}%</span></div></div>
+    <div class="mc hi"><div class="lbl">Pagos con gestión indirecta</div><div class="val">${formatMoney(totalPagosSinPromesa)}</div><div class="sub"></div></div>
+    <div class="mc hi"><div class="lbl">Monto total pagos</div><div class="val">${formatMoney(totalMontoPagos)}</div><div class="sub">${totalClPago} clientes con pago</div></div>
+    <div class="mc"><div class="lbl">Clientes con pago</div><div class="val">${totalClPago}</div><div class="sub"></div></div>
+  `;
+  
+  if(chartGest) chartGest.destroy();
+  chartGest = new Chart(document.getElementById('chartGest'),{type:'bar',data:{labels:names,datasets:[{label:'Gestiones',data:asesoresData.map(a=>a.total.gestiones),backgroundColor:asesoresData.map(a=>a.site==='MÉXICO'?'rgba(74,143,212,.75)':'rgba(201,168,76,.75)'),borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc,font:{size:13}},grid:{color:gc}},y:{ticks:{color:tc},grid:{color:gc}}}}});
+  
+  if(chartPagos) chartPagos.destroy();
+  chartPagos = new Chart(document.getElementById('chartPagos'),{type:'bar',data:{labels:names,datasets:[{label:'Monto pagos (USD)',data:asesoresData.map(a=>a.total.montoPagos),backgroundColor:'rgba(61,184,122,0.7)',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:tc}}},scales:{x:{ticks:{color:tc},grid:{color:gc}},y:{ticks:{color:tc, callback:function(v){return '$'+v.toLocaleString();}},grid:{color:gc}}}}});
+  
+  if(chartCP) chartCP.destroy();
+  chartCP = new Chart(document.getElementById('chartCP'),{type:'bar',data:{labels:names,datasets:[{label:'Contactos',data:asesoresData.map(a=>a.total.contactos),backgroundColor:'rgba(74,143,212,.75)'},{label:'Promesas',data:asesoresData.map(a=>a.total.promesas),backgroundColor:'rgba(201,168,76,.75)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc}},y:{ticks:{color:tc}}}}});
+  
+  const campMap={}; asesoresData.forEach(a=>a.camps.forEach(c=>{ if(c.gestiones>0) campMap[c.name]=(campMap[c.name]||0)+c.gestiones; }));
+  const campLabels=Object.keys(campMap), campData=campLabels.map(k=>campMap[k]);
+  if(chartCamp) chartCamp.destroy();
+  chartCamp = new Chart(document.getElementById('chartCamp'),{type:'doughnut',data:{labels:campLabels,datasets:[{data:campData,backgroundColor:campLabels.map(c=>CAMP_COLORS[c]||'#888'),borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{position:'right',labels:{color:tc}}}}});
+  
+  const maxCont=Math.max(...asesoresData.map(a=>a.total.clCont),1);
+  const maxProm=Math.max(...asesoresData.map(a=>a.total.clProm),1);
+  const sortedCont=[...asesoresData].sort((a,b)=>b.total.clCont-a.total.clCont);
+  const sortedProm=[...asesoresData].sort((a,b)=>b.total.clProm-a.total.clProm);
+  document.getElementById('rankContactados').innerHTML=sortedCont.map(a=>`<div class="rank-row"><div class="rank-name">${a.nombre.split(' ')[0]}</div><div class="rank-bw"><div class="rank-bf" style="width:${Math.round(a.total.clCont/maxCont*100)}%;background:#4A8FD4;"></div></div><div class="rank-v">${a.total.clCont}</div></div>`).join('');
+  document.getElementById('rankPromesas').innerHTML=sortedProm.map(a=>`<div class="rank-row"><div class="rank-name">${a.nombre.split(' ')[0]}</div><div class="rank-bw"><div class="rank-bf" style="width:${Math.round(a.total.clProm/maxProm*100)}%;background:#C9A84C;"></div></div><div class="rank-v">${a.total.clProm}</div></div>`).join('');
+  
+  const maxG=Math.max(...asesoresData.map(a=>a.total.gestiones),1);
+  document.getElementById('tablaResumenBody').innerHTML=asesoresData.map(a=>{
+    const efect=a.total.gestiones>0?(a.total.contactos/a.total.gestiones*100).toFixed(1):0;
+    const conv=a.total.clCont>0?(a.total.clProm/a.total.clCont*100).toFixed(1):0;
+    return `<tr><td class="bold">${a.nombre}</td><td><span class="site-tag">${a.site}</span></td><td class="num">${a.total.gestiones.toLocaleString()}<div class="mini-bw"><div class="mini-bf" style="width:${Math.round(a.total.gestiones/maxG*100)}%;background:${a.site==='MÉXICO'?'#4A8FD4':'#C9A84C'};"></div></div></td><td class="num">${a.total.contactos}</td><td class="num">${a.total.promesas}</td><td class="num ok">${formatMoney(a.total.pagosSinPromesa)}</td><td class="num ok">${formatMoney(a.total.montoPagos)}</td><td class="num">${a.total.clGest.toLocaleString()}</td><td class="num">${a.total.clCont}</td><td class="num">${a.total.clProm}</td><td class="num">${a.total.clPago}</td><td class="num ${efect>=15?'ok':efect>=8?'wn':'er'}">${efect}%</td><td class="num ${conv>=30?'ok':conv>=15?'wn':'er'}">${conv}%</td>`;
+  }).join('');
+}
+
+function renderAsesoresConDatos(globalData){
+  const site=document.getElementById('fSite').value;
+  const camp=document.getElementById('fCamp').value;
+  let filtered = globalData.filter(a=>{
+    if(site!=='all'&&a.site!==site) return false;
+    if(camp!=='all'&&!a.camps.find(c=>c.name===camp&&(c.gestiones>0||c.promesas>0))) return false;
+    return true;
+  }).map(a=>({...a, camps: camp==='all'?a.camps:a.camps.filter(c=>c.name===camp)}));
+  
+  const g=filtered.reduce((s,a)=>s+a.total.gestiones,0);
+  const c=filtered.reduce((s,a)=>s+a.total.contactos,0);
+  const p=filtered.reduce((s,a)=>s+a.total.promesas,0);
+  const pagoSinProm=filtered.reduce((s,a)=>s+a.total.pagosSinPromesa,0);
+  const montoPagos=filtered.reduce((s,a)=>s+a.total.montoPagos,0);
+  const clPago=filtered.reduce((s,a)=>s+a.total.clPago,0);
+  
+  document.getElementById('metricsA').innerHTML=[
+    {lbl:'Gestiones',val:g.toLocaleString()},{lbl:'Contactos',val:c},{lbl:'Promesas',val:p},
+    {lbl:'Pagos indirectos',val:formatMoney(pagoSinProm)},{lbl:'Monto pagos',val:formatMoney(montoPagos)},{lbl:'Clientes c/pago',val:clPago}
+  ].map(m=>`<div class="mc"><div class="lbl">${m.lbl}</div><div class="val">${m.val}</div><div class="sub">filtro</div></div>`).join('');
+  
+  if(filtered.length===0){
+    document.getElementById('agentList').innerHTML='<p style="color:var(--text-muted); text-align:center; padding:40px;">Sin asesores con ese filtro.</p>';
+    return;
+  }
+  document.getElementById('agentList').innerHTML=filtered.map(a=>renderAsesorCardDinamico(a)).join('');
+}
+
+function renderAsesorCardDinamico(a){
+  const isOpen=expanded.has(a.code);
+  const t=a.total;
+  const efect=t.gestiones>0?(t.contactos/t.gestiones*100).toFixed(1):0;
+  const conv=t.clCont>0?(t.clProm/t.clCont*100).toFixed(1):0;
+  const activeCamps=a.camps.filter(c=>c.gestiones>0||c.promesas>0||c.montoPagos>0);
+  const campCards=activeCamps.map(c=>`<div class="cc" style="border-color:${CAMP_COLORS[c.name]||'#888'};"><div class="cc-name" style="color:${CAMP_COLORS[c.name]};">${c.name}</div><div class="cc-stats"><div class="cs">Gestiones<br><span>${c.gestiones.toLocaleString()}</span></div><div class="cs">Contactos<br><span>${c.contactos}</span></div><div class="cs">Promesas<br><span>${c.promesas}</span></div><div class="cs">Pagos indirectos<br><span class="ok">${formatMoney(c.pagosSinPromesa||0)}</span></div><div class="cs">Monto pagos<br><span class="ok">${formatMoney(c.montoPagos||0)}</span></div><div class="cs">Cl. c/pago<br><span class="ok">${c.clPago||0}</span></div></div></div>`).join('');
+  
+  const body=isOpen?`<div class="agent-body"><div class="ab-label">KPIs del turno</div><div class="kpi-row"><div class="kpi-block"><div class="kb-lbl">Gestiones</div><div class="kb-val">${t.gestiones.toLocaleString()}</div></div><div class="kpi-block"><div class="kb-lbl">Contactos</div><div class="kb-val">${t.contactos}</div></div><div class="kpi-block"><div class="kb-lbl">Promesas</div><div class="kb-val">${t.promesas}</div></div><div class="kpi-block"><div class="kb-lbl">Pagos indirectos</div><div class="kb-val" style="color:#3DB87A">${formatMoney(t.pagosSinPromesa)}</div></div><div class="kpi-block"><div class="kb-lbl">Monto pagos</div><div class="kb-val" style="color:#3DB87A">${formatMoney(t.montoPagos)}</div></div><div class="kpi-block"><div class="kb-lbl">Clientes pago</div><div class="kb-val" style="color:#3DB87A">${t.clPago}</div></div></div><div class="ab-label">Distribución campañas</div><div class="dist-bar">${activeCamps.map(c=>`<div class="db-seg" style="width:${Math.round(c.gestiones/t.gestiones*100)}%;background:${CAMP_COLORS[c.name]}"></div>`).join('')}</div><div class="camps-grid">${campCards}</div></div>`:'';
+  
+  return `<div class="agent-card"><div class="agent-header" onclick="toggleAsesor('${a.code}')"><div class="avatar">${(a.nombre[0]||'')+(a.nombre.split(' ')[1]?.[0]||'')}</div><div class="ag-meta"><div class="ag-name">${a.nombre}</div><div class="ag-sub"><span class="site-tag">${a.site}</span></div></div><div class="ag-right"><div class="ag-kpi"><div>Gestiones <span>${t.gestiones}</span></div><div>Contactos <span>${t.contactos}</span></div><div>Efect. <span class="${efect>=15?'hi':efect>=8?'wa':''}">${efect}%</span></div><div>Pagos <span class="hi">${formatMoney(t.montoPagos)}</span></div></div><div class="caret ${isOpen?'open':''}">▼</div></div></div>${body}</div>`;
+}
+
+function toggleAsesor(code){ if(expanded.has(code)) expanded.delete(code); else expanded.add(code); renderAsesoresConDatos(globalAsesoresData); }
+function renderAsesores(){ renderAsesoresConDatos(globalAsesoresData); }
+
+function showView(id,btn){ 
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); 
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active')); 
+  document.getElementById('view-'+id).classList.add('active'); 
+  if(btn) btn.classList.add('active'); 
+  if(id==='resumen') buildResumenConDatos(globalAsesoresData); 
+  if(id==='asesores') renderAsesoresConDatos(globalAsesoresData); 
+  if(id==='horarios') renderHorarios();
+}
+
+// Inicialización
+buildResumenConDatos(globalAsesoresData);
+renderAsesoresConDatos(globalAsesoresData);
+renderHorarios();
+</script>
+</body>
+</html>
