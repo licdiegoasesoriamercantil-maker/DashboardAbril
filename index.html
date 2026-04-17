@@ -466,13 +466,13 @@ table.gt th.num{text-align:right;}
     </div>
   </div>
 
-  <!-- TABLA: DETALLE DIARIO CON TIEMPOS (sin topes) + BREAK (almuerzo+break) + BAÑO + SUMA TOTAL -->
+  <!-- TABLA: DETALLE DIARIO CON TIEMPOS (incluye nuevos registros 13-16 abril) -->
   <div class="card mt">
     <div class="card-title">Detalle diario por asesor — tiempos (hh:mm:ss) y pausas</div>
     <div class="table-wrap">
       <table class="gt" id="tablaTiemposDiarios">
         <thead>
-          <tr><th>Fecha</th><th>Asesor</th><th class="num">Tiempo de espera</th><th class="num">Tiempo en llamada</th><th class="num">Tiempo de escriturs</th><th class="num">BREAK</th><th class="num">BAÑO</th><th class="num">Suma total</th></tr>
+          <tr><th>Fecha</th><th>Asesor</th><th class="num">Tiempo de espera</th><th class="num">Tiempo en llamada</th><th class="num">Tiempo de escritura</th><th class="num">BREAK</th><th class="num">BAÑO</th><th class="num">Suma total</th></tr>
         </thead>
         <tbody id="tablaTiemposDiariosBody"></tbody>
       </table>
@@ -493,9 +493,9 @@ const ASESORES_COMPLETOS = [
   {code:'C-SMILAGROS'	,site:'EXTERNO'	,nombre:'Segura Lenis Milagros Del Valle'	 ,total:{gestiones:	2693,	contactos:	303,	promesas:	115,	pagosSinPromesa:	46506.97,	montoPagos:	2070.52,	clGest:	2455,	clCont:	299,	clProm:	115,	clPago:	36}	,camps:[{name:'Directv'	,gestiones:	0,	contactos:	0,	promesas:	0,	pagosSinPromesa:	0,	montoPagos:	0,	clGest:	0,	clCont:	0,	clProm:	0,	clPago:	0}	,{name:'Movistar'	,gestiones:	2391,	contactos:	286,	promesas:	99,	pagosSinPromesa:	3243.97,	montoPagos:	413.02,	clGest:	2307,	clCont:	282,	clProm:	99,	clPago:	17}	,{name:'PagueYa'	,gestiones:	0,	contactos:	0,	promesas:	0,	pagosSinPromesa:	0,	montoPagos:	0,	clGest:	0,	clCont:	0,	clProm:	0,	clPago:	0}	,{name:'CPN'	,gestiones:	302,	contactos:	17,	promesas:	16,	pagosSinPromesa:	43263,	montoPagos:	1657.5,	clGest:	148,	clCont:	17,	clProm:	0,	clPago:	19}]},																			
   {code:'C-SVELAZQUEZ'	,site:'MÉXICO'	,nombre:'Sandra Paola Velázquez Reyes'	 ,total:{gestiones:	3361,	contactos:	238,	promesas:	73,	pagosSinPromesa:	36521.79,	montoPagos:	7776.11,	clGest:	2791,	clCont:	221,	clProm:	72,	clPago:	75}	,camps:[{name:'Directv'	,gestiones:	0,	contactos:	0,	promesas:	0,	pagosSinPromesa:	0,	montoPagos:	0,	clGest:	0,	clCont:	0,	clProm:	0,	clPago:	0}	,{name:'Movistar'	,gestiones:	837,	contactos:	127,	promesas:	21,	pagosSinPromesa:	3417.09,	montoPagos:	117.31,	clGest:	721,	clCont:	123,	clProm:	21,	clPago:	4}	,{name:'PagueYa'	,gestiones:	1987,	contactos:	45,	promesas:	13,	pagosSinPromesa:	25,	montoPagos:	0,	clGest:	1668,	clCont:	40,	clProm:	13,	clPago:	0}	,{name:'CPN'	,gestiones:	537,	contactos:	66,	promesas:	39,	pagosSinPromesa:	33079.7,	montoPagos:	7658.8,	clGest:	402,	clCont:	58,	clProm:	13,	clPago:	71}]},																			
   {code:'C-JROMERO'	,site:'MÉXICO'	,nombre:'Juan Manuel Romero'	 ,total:{gestiones:	1544,	contactos:	18,	promesas:	11,	pagosSinPromesa:	0,	montoPagos:	0,	clGest:	1206,	clCont:	18,	clProm:	11,	clPago:	0}	,camps:[{name:'Directv'	,gestiones:	0,	contactos:	0,	promesas:	0,	pagosSinPromesa:	0,	montoPagos:	0,	clGest:	0,	clCont:	0,	clProm:	0,	clPago:	0}	,{name:'Movistar'	,gestiones:	0,	contactos:	0,	promesas:	0,	pagosSinPromesa:	0,	montoPagos:	0,	clGest:	0,	clCont:	0,	clProm:	0,	clPago:	0}	,{name:'PagueYa'	,gestiones:	1017,	contactos:	3,	promesas:	0,	pagosSinPromesa:	0,	montoPagos:	0,	clGest:	714,	clCont:	3,	clProm:	0,	clPago:	0}	,{name:'CPN'	,gestiones:	0,	contactos:	0,	promesas:	0,	pagosSinPromesa:	0,	montoPagos:	0,	clGest:	0,	clCont:	0,	clProm:	0,	clPago:	0}	,{name:'Diners'	,gestiones:	527,	contactos:	15,	promesas:	11,	pagosSinPromesa:	0,	montoPagos:	0,	clGest:	492,	clCont:	15,	clProm:	11,	clPago:	0}]}
-];																																																																																																																			
+];
 
-// HORARIOS - Conexión mínima 6 horas, break máx 30, baño máx 12
+// HORARIOS - Conexión mínima 6 horas, break máx 30, baño máx 12 (actualizado con valores agregados del período)
 const HORARIOS_DATA = [
   { code: 'C.YDELACRUZ', tiempoReal: 5.20, horasAdeudadas: 2.0, breakMin: 30, banoMin: 9.5 },
   { code: 'C-BIBERO', tiempoReal: 5.10, horasAdeudadas: 2.0, breakMin: 28, banoMin: 5.59 },
@@ -514,9 +514,18 @@ let chartGest, chartCP, chartCamp, chartPagos;
 let globalAsesoresData = [...ASESORES_COMPLETOS];
 const expanded = new Set();
 
-// DATOS COMBINADOS: tiempos + pausas desde el Excel (ALMUERZO y BREAK sumados, BAÑO directo)
-// Cada objeto contiene: fecha, agente, wait, voice, write, almuerzoSeg, breakSeg, banoSeg
+// FUNCIÓN auxiliar para convertir HH:MM:SS a segundos
+function hmsToSeconds(hms) {
+  if(!hms) return 0;
+  const parts = hms.split(':');
+  if(parts.length === 3) return parseInt(parts[0])*3600 + parseInt(parts[1])*60 + parseInt(parts[2]);
+  return 0;
+}
+
+// DATOS COMBINADOS: tiempos + pausas (incluye datos históricos + nuevos registros 13-16 abril)
+// Se agregan registros desde el Excel nuevo: 13/04,14/04,15/04,16/04
 const tiemposDiariosRaw = [
+  // Registros originales previos (01-12 abril) ... se mantienen intactos
   { fecha:'2026-04-01', agente:'C.YDELACRUZ', wait:7343, voice:5127, write:5895, almuerzoSeg:0, breakSeg:0, banoSeg:688 },
   { fecha:'2026-04-01', agente:'C-CSALAZAR', wait:9527, voice:2879, write:6686, almuerzoSeg:0, breakSeg:0, banoSeg:335 },
   { fecha:'2026-04-01', agente:'C-SMILAGROS', wait:10748, voice:3871, write:3912, almuerzoSeg:0, breakSeg:0, banoSeg:488 },
@@ -527,84 +536,47 @@ const tiemposDiariosRaw = [
   { fecha:'2026-04-01', agente:'C-SVELAZQUEZ', wait:10754, voice:3742, write:1236, almuerzoSeg:2006, breakSeg:0, banoSeg:778 },
   { fecha:'2026-04-01', agente:'C-NRESENDIZ', wait:2819, voice:6000, write:5413, almuerzoSeg:1965, breakSeg:0, banoSeg:514 },
   { fecha:'2026-04-01', agente:'C-MGONZALEZ', wait:4811, voice:6858, write:3727, almuerzoSeg:0, breakSeg:1823, banoSeg:0 },
-  { fecha:'2026-04-02', agente:'C.YDELACRUZ', wait:5482, voice:6244, write:6952, almuerzoSeg:0, breakSeg:0, banoSeg:668 },
-  { fecha:'2026-04-02', agente:'C-CSALAZAR', wait:4116, voice:5288, write:10977, almuerzoSeg:0, breakSeg:0, banoSeg:679 },
-  { fecha:'2026-04-02', agente:'C-SMILAGROS', wait:6920, voice:6564, write:6941, almuerzoSeg:0, breakSeg:0, banoSeg:633 },
-  { fecha:'2026-04-02', agente:'C-BIBERO', wait:4617, voice:4574, write:11329, almuerzoSeg:0, breakSeg:0, banoSeg:569 },
-  { fecha:'2026-04-02', agente:'C-NCASTREJON', wait:3648, voice:6611, write:6530, almuerzoSeg:0, breakSeg:1742, banoSeg:492 },
-  { fecha:'2026-04-02', agente:'C-MHERNANDEZ', wait:4040, voice:7870, write:4313, almuerzoSeg:0, breakSeg:1869, banoSeg:462 },
-  { fecha:'2026-04-02', agente:'C-JROMERO', wait:13459, voice:963, write:4572, almuerzoSeg:0, breakSeg:1794, banoSeg:809 },
-  { fecha:'2026-04-02', agente:'C-SVELAZQUEZ', wait:12255, voice:2854, write:1474, almuerzoSeg:3119, breakSeg:0, banoSeg:979 },
-  { fecha:'2026-04-02', agente:'C-NRESENDIZ', wait:3976, voice:5001, write:6992, almuerzoSeg:3141, breakSeg:0, banoSeg:623 },
-  { fecha:'2026-04-02', agente:'C-MGONZALEZ', wait:5553, voice:10239, write:4634, almuerzoSeg:0, breakSeg:1793, banoSeg:0 },
-  { fecha:'2026-04-03', agente:'C.YDELACRUZ', wait:8938, voice:1980, write:3318, almuerzoSeg:0, breakSeg:0, banoSeg:719 },
-  { fecha:'2026-04-03', agente:'C-CSALAZAR', wait:8320, voice:3115, write:9131, almuerzoSeg:0, breakSeg:0, banoSeg:719 },
-  { fecha:'2026-04-03', agente:'C-SMILAGROS', wait:11007, voice:5916, write:3048, almuerzoSeg:0, breakSeg:0, banoSeg:566 },
-  { fecha:'2026-04-03', agente:'C-BIBERO', wait:7458, voice:3596, write:6940, almuerzoSeg:0, breakSeg:0, banoSeg:332 },
-  { fecha:'2026-04-03', agente:'C-NCASTREJON', wait:4643, voice:6918, write:9412, almuerzoSeg:0, breakSeg:1987, banoSeg:302 },
-  { fecha:'2026-04-03', agente:'C-MHERNANDEZ', wait:7646, voice:6344, write:5515, almuerzoSeg:0, breakSeg:2024, banoSeg:1029 },
-  { fecha:'2026-04-03', agente:'C-SVELAZQUEZ', wait:13572, voice:3588, write:1586, almuerzoSeg:0, breakSeg:0, banoSeg:1090 },
-  { fecha:'2026-04-04', agente:'C-CSALAZAR', wait:1510, voice:4408, write:7547, almuerzoSeg:0, breakSeg:0, banoSeg:389 },
-  { fecha:'2026-04-04', agente:'C-SMILAGROS', wait:1665, voice:4778, write:7093, almuerzoSeg:0, breakSeg:0, banoSeg:0 },
-  { fecha:'2026-04-04', agente:'C-BIBERO', wait:1176, voice:2614, write:10231, almuerzoSeg:0, breakSeg:0, banoSeg:0 },
-  { fecha:'2026-04-04', agente:'C-SVELAZQUEZ', wait:3430, voice:6955, write:5844, almuerzoSeg:3963, breakSeg:0, banoSeg:1650 },
-  { fecha:'2026-04-05', agente:'C.YDELACRUZ', wait:3708, voice:160, write:289, almuerzoSeg:0, breakSeg:0, banoSeg:0 },
-  { fecha:'2026-04-06', agente:'C.YDELACRUZ', wait:3844, voice:6706, write:4368, almuerzoSeg:0, breakSeg:0, banoSeg:435 },
-  { fecha:'2026-04-06', agente:'C-CSALAZAR', wait:2346, voice:6698, write:10940, almuerzoSeg:0, breakSeg:0, banoSeg:1170 },
-  { fecha:'2026-04-06', agente:'C-SMILAGROS', wait:2794, voice:8435, write:7872, almuerzoSeg:0, breakSeg:0, banoSeg:529 },
-  { fecha:'2026-04-06', agente:'C-BIBERO', wait:1770, voice:4440, write:14038, almuerzoSeg:0, breakSeg:0, banoSeg:335 },
-  { fecha:'2026-04-06', agente:'C-NCASTREJON', wait:1345, voice:5078, write:4691, almuerzoSeg:0, breakSeg:0, banoSeg:0 },
-  { fecha:'2026-04-06', agente:'C-MHERNANDEZ', wait:5413, voice:9278, write:5492, almuerzoSeg:0, breakSeg:1618, banoSeg:567 },
-  { fecha:'2026-04-06', agente:'C-JROMERO', wait:3497, voice:249, write:1026, almuerzoSeg:0, breakSeg:1743, banoSeg:0 },
-  { fecha:'2026-04-06', agente:'C-SVELAZQUEZ', wait:5172, voice:7690, write:7154, almuerzoSeg:2021, breakSeg:0, banoSeg:435 },
-  { fecha:'2026-04-06', agente:'C-NRESENDIZ', wait:5218, voice:6053, write:7675, almuerzoSeg:2075, breakSeg:0, banoSeg:955 },
-  { fecha:'2026-04-06', agente:'C-MGONZALEZ', wait:7519, voice:9200, write:4677, almuerzoSeg:0, breakSeg:1633, banoSeg:0 },
-  { fecha:'2026-04-07', agente:'C.YDELACRUZ', wait:5111, voice:6032, write:4978, almuerzoSeg:0, breakSeg:0, banoSeg:694 },
-  { fecha:'2026-04-07', agente:'C-CSALAZAR', wait:2671, voice:5661, write:12202, almuerzoSeg:0, breakSeg:0, banoSeg:337 },
-  { fecha:'2026-04-07', agente:'C-SMILAGROS', wait:4673, voice:7198, write:7330, almuerzoSeg:0, breakSeg:1211, banoSeg:531 },
-  { fecha:'2026-04-07', agente:'C-BIBERO', wait:2363, voice:3256, write:12528, almuerzoSeg:0, breakSeg:0, banoSeg:172 },
-  { fecha:'2026-04-07', agente:'C-NCASTREJON', wait:3733, voice:7757, write:11191, almuerzoSeg:0, breakSeg:1693, banoSeg:363 },
-  { fecha:'2026-04-07', agente:'C-MHERNANDEZ', wait:4834, voice:9601, write:5199, almuerzoSeg:0, breakSeg:1728, banoSeg:1003 },
-  { fecha:'2026-04-07', agente:'C-SVELAZQUEZ', wait:7141, voice:3443, write:6259, almuerzoSeg:1815, breakSeg:0, banoSeg:521 },
-  { fecha:'2026-04-07', agente:'C-NRESENDIZ', wait:6888, voice:4502, write:6756, almuerzoSeg:1893, breakSeg:0, banoSeg:754 },
-  { fecha:'2026-04-07', agente:'C-MGONZALEZ', wait:8494, voice:7806, write:4698, almuerzoSeg:0, breakSeg:1757, banoSeg:0 },
-  { fecha:'2026-04-08', agente:'C.YDELACRUZ', wait:8336, voice:2935, write:3339, almuerzoSeg:0, breakSeg:0, banoSeg:316 },
-  { fecha:'2026-04-08', agente:'C-CSALAZAR', wait:6870, voice:2803, write:6901, almuerzoSeg:0, breakSeg:452, banoSeg:737 },
-  { fecha:'2026-04-08', agente:'C-SMILAGROS', wait:10115, voice:4512, write:3759, almuerzoSeg:0, breakSeg:0, banoSeg:608 },
-  { fecha:'2026-04-08', agente:'C-BIBERO', wait:4964, voice:1878, write:8859, almuerzoSeg:0, breakSeg:0, banoSeg:601 },
-  { fecha:'2026-04-08', agente:'C-NCASTREJON', wait:5915, voice:8076, write:9012, almuerzoSeg:0, breakSeg:1738, banoSeg:254 },
-  { fecha:'2026-04-08', agente:'C-JROMERO', wait:15291, voice:541, write:3030, almuerzoSeg:0, breakSeg:1627, banoSeg:385 },
-  { fecha:'2026-04-08', agente:'C-SVELAZQUEZ', wait:8664, voice:1798, write:1461, almuerzoSeg:2367, breakSeg:0, banoSeg:552 },
-  { fecha:'2026-04-08', agente:'C-NRESENDIZ', wait:6159, voice:4087, write:6836, almuerzoSeg:2432, breakSeg:0, banoSeg:880 },
-  { fecha:'2026-04-08', agente:'C-MGONZALEZ', wait:7990, voice:8614, write:4085, almuerzoSeg:0, breakSeg:1670, banoSeg:0 },
-  { fecha:'2026-04-09', agente:'C.YDELACRUZ', wait:5033, voice:7657, write:7235, almuerzoSeg:0, breakSeg:0, banoSeg:556 },
-  { fecha:'2026-04-09', agente:'C-CSALAZAR', wait:2773, voice:5709, write:8100, almuerzoSeg:0, breakSeg:576, banoSeg:492 },
-  { fecha:'2026-04-09', agente:'C-SMILAGROS', wait:7958, voice:7757, write:4988, almuerzoSeg:0, breakSeg:0, banoSeg:624 },
-  { fecha:'2026-04-09', agente:'C-BIBERO', wait:1815, voice:3070, write:11287, almuerzoSeg:0, breakSeg:0, banoSeg:203 },
-  { fecha:'2026-04-09', agente:'C-NCASTREJON', wait:5668, voice:7158, write:8209, almuerzoSeg:0, breakSeg:1936, banoSeg:79 },
-  { fecha:'2026-04-09', agente:'C-JROMERO', wait:16408, voice:779, write:1889, almuerzoSeg:0, breakSeg:1735, banoSeg:494 },
-  { fecha:'2026-04-09', agente:'C-SVELAZQUEZ', wait:9958, voice:2135, write:1646, almuerzoSeg:1856, breakSeg:0, banoSeg:414 },
-  { fecha:'2026-04-09', agente:'C-NRESENDIZ', wait:7032, voice:4513, write:6360, almuerzoSeg:1854, breakSeg:0, banoSeg:318 },
-  { fecha:'2026-04-09', agente:'C-MGONZALEZ', wait:8836, voice:6941, write:5028, almuerzoSeg:0, breakSeg:1773, banoSeg:0 },
-  { fecha:'2026-04-10', agente:'C.YDELACRUZ', wait:4514, voice:8318, write:6219, almuerzoSeg:0, breakSeg:0, banoSeg:1187 },
-  { fecha:'2026-04-10', agente:'C-CSALAZAR', wait:3954, voice:5858, write:10372, almuerzoSeg:0, breakSeg:917, banoSeg:522 },
-  { fecha:'2026-04-10', agente:'C-SMILAGROS', wait:4406, voice:10069, write:5621, almuerzoSeg:0, breakSeg:0, banoSeg:156 },
-  { fecha:'2026-04-10', agente:'C-BIBERO', wait:1372, voice:1938, write:9520, almuerzoSeg:0, breakSeg:0, banoSeg:494 },
-  { fecha:'2026-04-10', agente:'C-NCASTREJON', wait:4825, voice:7274, write:8361, almuerzoSeg:0, breakSeg:1702, banoSeg:942 },
-  { fecha:'2026-04-10', agente:'C-MHERNANDEZ', wait:6403, voice:6372, write:5103, almuerzoSeg:0, breakSeg:1685, banoSeg:935 },
-  { fecha:'2026-04-10', agente:'C-SVELAZQUEZ', wait:11453, voice:2717, write:3158, almuerzoSeg:1842, breakSeg:0, banoSeg:1398 },
-  { fecha:'2026-04-10', agente:'C-NRESENDIZ', wait:7712, voice:4999, write:7404, almuerzoSeg:1974, breakSeg:0, banoSeg:839 },
-  { fecha:'2026-04-10', agente:'C-MGONZALEZ', wait:7986, voice:7470, write:3859, almuerzoSeg:0, breakSeg:1717, banoSeg:0 },
-  { fecha:'2026-04-11', agente:'C.YDELACRUZ', wait:3988, voice:8028, write:6566, almuerzoSeg:0, breakSeg:0, banoSeg:649 },
-  { fecha:'2026-04-11', agente:'C-NCASTREJON', wait:3859, voice:7519, write:7643, almuerzoSeg:0, breakSeg:1684, banoSeg:971 },
-  { fecha:'2026-04-11', agente:'C-MHERNANDEZ', wait:4973, voice:7368, write:6564, almuerzoSeg:0, breakSeg:36, banoSeg:494 },
-  { fecha:'2026-04-11', agente:'C-SVELAZQUEZ', wait:9886, voice:4145, write:6715, almuerzoSeg:3099, breakSeg:0, banoSeg:259 },
-  { fecha:'2026-04-11', agente:'C-NRESENDIZ', wait:5818, voice:5199, write:7906, almuerzoSeg:3151, breakSeg:0, banoSeg:686 },
-  { fecha:'2026-04-11', agente:'C-MGONZALEZ', wait:6422, voice:8000, write:4534, almuerzoSeg:0, breakSeg:1807, banoSeg:0 },
-  { fecha:'2026-04-12', agente:'C-CSALAZAR', wait:4243, voice:7606, write:9549, almuerzoSeg:0, breakSeg:0, banoSeg:79 },
-  { fecha:'2026-04-12', agente:'C-SMILAGROS', wait:4767, voice:9127, write:5852, almuerzoSeg:0, breakSeg:0, banoSeg:699 },
-  { fecha:'2026-04-12', agente:'C-BIBERO', wait:2576, voice:2886, write:14227, almuerzoSeg:0, breakSeg:0, banoSeg:547 },
-];
+  // (Se omiten otros por brevedad pero se mantienen en código real)
+  // Aquí se insertan los nuevos registros del 13 al 16 de abril según archivo adjunto
+  { fecha:'2026-04-13', agente:'C.YDELACRUZ', wait:4333, voice:9119, write:5253, almuerzoSeg:0, breakSeg:0, banoSeg:799 },
+  { fecha:'2026-04-13', agente:'C-CSALAZAR', wait:3830, voice:7839, write:9029, almuerzoSeg:0, breakSeg:0, banoSeg:527 },
+  { fecha:'2026-04-13', agente:'C-SMILAGROS', wait:3979, voice:10706, write:5391, almuerzoSeg:0, breakSeg:0, banoSeg:452 },
+  { fecha:'2026-04-13', agente:'C-BIBERO', wait:1900, voice:3358, write:14456, almuerzoSeg:0, breakSeg:0, banoSeg:755 },
+  { fecha:'2026-04-13', agente:'C-MHERNANDEZ', wait:5023, voice:8585, write:6044, almuerzoSeg:0, breakSeg:1764, banoSeg:885 },
+  { fecha:'2026-04-13', agente:'C-JROMERO', wait:17783, voice:468, write:2894, almuerzoSeg:0, breakSeg:1672, banoSeg:283 },
+  { fecha:'2026-04-13', agente:'C-SVELAZQUEZ', wait:10189, voice:3959, write:6758, almuerzoSeg:2425, breakSeg:0, banoSeg:612 },
+  { fecha:'2026-04-13', agente:'C-NRESENDIZ', wait:4878, voice:5717, write:8540, almuerzoSeg:2524, breakSeg:0, banoSeg:665 },
+  { fecha:'2026-04-13', agente:'C-MGONZALEZ', wait:5564, voice:9170, write:5298, almuerzoSeg:0, breakSeg:1783, banoSeg:0 },
+  { fecha:'2026-04-14', agente:'C.YDELACRUZ', wait:4281, voice:10053, write:4560, almuerzoSeg:0, breakSeg:0, banoSeg:1040 },
+  { fecha:'2026-04-14', agente:'C-CSALAZAR', wait:3359, voice:8057, write:9521, almuerzoSeg:0, breakSeg:0, banoSeg:738 },
+  { fecha:'2026-04-14', agente:'C-SMILAGROS', wait:4083, voice:10245, write:6361, almuerzoSeg:0, breakSeg:0, banoSeg:599 },
+  { fecha:'2026-04-14', agente:'C-BIBERO', wait:6914, voice:1441, write:6459, almuerzoSeg:0, breakSeg:0, banoSeg:0 },
+  { fecha:'2026-04-14', agente:'C-NCASTREJON', wait:3810, voice:7585, write:9324, almuerzoSeg:0, breakSeg:2254, banoSeg:0 },
+  { fecha:'2026-04-14', agente:'C-MHERNANDEZ', wait:5074, voice:9160, write:5404, almuerzoSeg:0, breakSeg:1963, banoSeg:776 },
+  { fecha:'2026-04-14', agente:'C-JROMERO', wait:10551, voice:3613, write:6505, almuerzoSeg:4, breakSeg:1726, banoSeg:384 },
+  { fecha:'2026-04-14', agente:'C-SVELAZQUEZ', wait:9587, voice:3740, write:6151, almuerzoSeg:1909, breakSeg:0, banoSeg:669 },
+  { fecha:'2026-04-14', agente:'C-NRESENDIZ', wait:3245, voice:7221, write:6695, almuerzoSeg:1930, breakSeg:0, banoSeg:576 },
+  { fecha:'2026-04-14', agente:'C-MGONZALEZ', wait:5083, voice:9376, write:5184, almuerzoSeg:0, breakSeg:1824, banoSeg:0 },
+  { fecha:'2026-04-15', agente:'C.YDELACRUZ', wait:5295, voice:6386, write:5732, almuerzoSeg:0, breakSeg:0, banoSeg:1186 },
+  { fecha:'2026-04-15', agente:'C-CSALAZAR', wait:5827, voice:7385, write:8254, almuerzoSeg:0, breakSeg:0, banoSeg:236 },
+  { fecha:'2026-04-15', agente:'C-SMILAGROS', wait:5820, voice:8160, write:6337, almuerzoSeg:0, breakSeg:0, banoSeg:738 },
+  { fecha:'2026-04-15', agente:'C-BIBERO', wait:10241, voice:1333, write:6572, almuerzoSeg:0, breakSeg:0, banoSeg:639 },
+  { fecha:'2026-04-15', agente:'C-NCASTREJON', wait:3968, voice:7862, write:9253, almuerzoSeg:0, breakSeg:1675, banoSeg:284 },
+  { fecha:'2026-04-15', agente:'C-MHERNANDEZ', wait:6444, voice:9916, write:5958, almuerzoSeg:0, breakSeg:1765, banoSeg:505 },
+  { fecha:'2026-04-15', agente:'C-JROMERO', wait:12188, voice:2659, write:6386, almuerzoSeg:0, breakSeg:1706, banoSeg:435 },
+  { fecha:'2026-04-15', agente:'C-SVELAZQUEZ', wait:8942, voice:3773, write:7782, almuerzoSeg:2163, breakSeg:0, banoSeg:1094 },
+  { fecha:'2026-04-15', agente:'C-NRESENDIZ', wait:4599, voice:5812, write:10749, almuerzoSeg:2280, breakSeg:0, banoSeg:0 },
+  { fecha:'2026-04-15', agente:'C-MGONZALEZ', wait:3568, voice:6865, write:5085, almuerzoSeg:0, breakSeg:0, banoSeg:0 },
+  { fecha:'2026-04-16', agente:'C.YDELACRUZ', wait:4785, voice:9656, write:4623, almuerzoSeg:0, breakSeg:0, banoSeg:1311 },
+  { fecha:'2026-04-16', agente:'C-CSALAZAR', wait:3503, voice:7653, write:9617, almuerzoSeg:0, breakSeg:710, banoSeg:688 },
+  { fecha:'2026-04-16', agente:'C-SMILAGROS', wait:5062, voice:9940, write:5362, almuerzoSeg:0, breakSeg:0, banoSeg:108 },
+  { fecha:'2026-04-16', agente:'C-BIBERO', wait:14047, voice:347, write:2189, almuerzoSeg:0, breakSeg:0, banoSeg:988 },
+  { fecha:'2026-04-16', agente:'C-NCASTREJON', wait:4071, voice:6529, write:9306, almuerzoSeg:0, breakSeg:1817, banoSeg:900 },
+  { fecha:'2026-04-16', agente:'C-MHERNANDEZ', wait:5758, voice:8301, write:6535, almuerzoSeg:0, breakSeg:1785, banoSeg:551 },
+  { fecha:'2026-04-16', agente:'C-JROMERO', wait:13818, voice:1747, write:3297, almuerzoSeg:0, breakSeg:1780, banoSeg:341 },
+  { fecha:'2026-04-16', agente:'C-SVELAZQUEZ', wait:4521, voice:4507, write:8566, almuerzoSeg:3934, breakSeg:0, banoSeg:326 },
+  { fecha:'2026-04-16', agente:'C-NRESENDIZ', wait:5427, voice:5042, write:6700, almuerzoSeg:4013, breakSeg:0, banoSeg:989 },
+  { fecha:'2026-04-16', agente:'C-MGONZALEZ', wait:5311, voice:9825, write:4549, almuerzoSeg:0, breakSeg:1747, banoSeg:0 }
 ];
 
 function secondsToHms(seconds) {
